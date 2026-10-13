@@ -5,7 +5,6 @@ import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -20,13 +19,12 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 private val Context.settings by preferencesDataStore("settings")
-data class Preferences(val team: String = "", val theme: String = "dark", val spoiler: Boolean = false)
+data class Preferences(val team: String = "", val theme: String = "dark")
 class AppViewModel(app: Application): AndroidViewModel(app) {
     private val store = app.settings
     private val teamKey = stringPreferencesKey("team")
     private val themeKey = stringPreferencesKey("theme")
-    private val spoilerKey = booleanPreferencesKey("spoiler")
-    val preferences = store.data.map { Preferences(it[teamKey] ?: "", it[themeKey] ?: "dark", it[spoilerKey] ?: false) }
+    val preferences = store.data.map { Preferences(it[teamKey] ?: "", it[themeKey] ?: "dark") }
         .stateIn(viewModelScope, SharingStarted.Eagerly, Preferences())
     private val repo = NbaRepository(app)
     var teams by mutableStateOf(Loaded(data = repo.bundledTeams)); private set
@@ -53,7 +51,6 @@ class AppViewModel(app: Application): AndroidViewModel(app) {
     }
     fun setTeam(id: String) { viewModelScope.launch { store.edit { it[teamKey] = id } } }
     fun setTheme(value: String) { viewModelScope.launch { store.edit { it[themeKey] = value } } }
-    fun setSpoiler(value: Boolean) { viewModelScope.launch { store.edit { it[spoilerKey] = value } } }
     fun foreground() {
         val newDay = LocalDate.now()
         val newZone = ZoneId.systemDefault()
@@ -78,7 +75,7 @@ class AppViewModel(app: Application): AndroidViewModel(app) {
     fun loadSchedule(force: Boolean = false) {
         scheduleJob?.cancel()
         if(loadedTeam.isBlank()) { schedule = Loaded(); return }
-        schedule = Loaded(loading = true)
+        schedule = if(force) schedule.copy(loading = true) else Loaded(loading = true)
         val id = loadedTeam
         scheduleJob = viewModelScope.launch { schedule = repo.schedule(id, season, force) }
     }

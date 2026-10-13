@@ -8,6 +8,48 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 class ParsingTest {
+    @Test fun homeCarouselShowsFollowedUpcomingThenRecentWithoutDuplicates() {
+        val base = parseEvents(fixture("scoreboard")).first()
+        val now = Instant.parse("2026-10-12T08:00:00Z")
+        val past = base.copy(id="past", state="post", instant=now.minusSeconds(86400))
+        val next = base.copy(id="next", state="pre", statusName="STATUS_SCHEDULED", instant=now.plusSeconds(86400))
+        val postponed = next.copy(id="postponed", statusName="STATUS_POSTPONED", instant=now.plusSeconds(100))
+        val other = next.copy(id="other", home=next.home.copy(id="foreign-home"), away=next.away.copy(id="foreign-away"))
+        assertEquals(listOf("next", "past"), homeGames(listOf(past), listOf(other,postponed,next,past,next), base.home.id, now).map {it.id})
+        assertTrue(homeGames(listOf(past), listOf(next), "", now).isEmpty())
+        val live = base.copy(id="live", state="in", instant=now.minusSeconds(100))
+        assertEquals("live", homeGames(listOf(live),listOf(next,past),base.home.id,now).first().id)
+    }
+    @Test fun winnerHighlightOnlyUsesNumericFinalScores() {
+        val base = parseEvents(fixture("scoreboard")).first().copy(state="post", homeScore="119", awayScore="105")
+        assertTrue(isWinner(base,base.home.id))
+        assertFalse(isWinner(base,base.away.id))
+        assertFalse(isWinner(base.copy(state="in"),base.home.id))
+        assertFalse(isWinner(base.copy(awayScore="—"),base.home.id))
+        assertFalse(isWinner(base.copy(awayScore="119"),base.home.id))
+    }
+    private fun names() = PlayerNames(org.json.JSONArray(java.io.File("src/main/assets/players_zh.json").readText().removePrefix("\uFEFF")))
+    @Test fun playerTranslationWorksOnExistingEnglishSummaryCache() {
+        val detail = parseDetail(fixture("summary"), names())
+        assertEquals("丹尼尔·加福德", detail.players.first().players.first().name)
+        assertEquals(parseDetail(fixture("summary")).players.first().players.first().cells, detail.players.first().players.first().cells)
+    }
+    @Test fun stableIdsAvoidGuessingUnknownPlayersWithSimilarNames() {
+        assertEquals("勒布朗·詹姆斯", names().translate("1966", "LeBron James"))
+        assertEquals("LeBron James", names().translate("unknown-id", "LeBron James"))
+        assertEquals("Future Player", names().translate("", "Future Player"))
+        assertEquals("卢卡·东契奇", names().translate("", "Luka Dončić"))
+    }
+    @Test fun allBundledTeamsHaveLocalDecodableLogosWithoutRemoteUrl() {
+        val teams = org.json.JSONArray(java.io.File("src/main/assets/teams.json").readText().removePrefix("\uFEFF"))
+        assertEquals(30, teams.length())
+        teams.objects().forEach {
+            val team = parseTeam(it).copy(logo = "")
+            assertNotNull(teamLogoResource(team.id))
+            val image = javax.imageio.ImageIO.read(java.io.File("src/main/res/drawable-nodpi/team_${team.id}.png"))
+            assertTrue(image.width > 0 && image.height > 0)
+        }
+    }
     private fun fixture(name: String) = JSONObject(javaClass.getResource("/$name.json")!!.readText())
     @Test fun realScoreboardParsesAndDeduplicatesAcrossProviderDates() {
         val events = parseEvents(fixture("scoreboard"))

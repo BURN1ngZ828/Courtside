@@ -22,7 +22,9 @@ import java.util.concurrent.ConcurrentHashMap
 
 data class Team(val id: String, val abbr: String, val english: String, val logo: String = "", val color: String = "385D99") {
     val name: String get() = chineseNames[id] ?: english
+    val shortName: String get() = shortNames[id] ?: name
 }
+private val shortNames = listOf("老鹰", "凯尔特人", "鹈鹕", "公牛", "骑士", "独行侠", "掘金", "活塞", "勇士", "火箭", "步行者", "快船", "湖人", "热火", "雄鹿", "森林狼", "篮网", "尼克斯", "魔术", "76人", "太阳", "开拓者", "国王", "马刺", "雷霆", "爵士", "奇才", "猛龙", "灰熊", "黄蜂").mapIndexed { index, name -> (index+1).toString() to name }.toMap()
 val chineseNames = mapOf("1" to "亚特兰大老鹰", "2" to "波士顿凯尔特人", "3" to "新奥尔良鹈鹕", "4" to "芝加哥公牛", "5" to "克利夫兰骑士", "6" to "达拉斯独行侠", "7" to "丹佛掘金", "8" to "底特律活塞", "9" to "金州勇士", "10" to "休斯敦火箭", "11" to "印第安纳步行者", "12" to "洛杉矶快船", "13" to "洛杉矶湖人", "14" to "迈阿密热火", "15" to "密尔沃基雄鹿", "16" to "明尼苏达森林狼", "17" to "布鲁克林篮网", "18" to "纽约尼克斯", "19" to "奥兰多魔术", "20" to "费城76人", "21" to "菲尼克斯太阳", "22" to "波特兰开拓者", "23" to "萨克拉门托国王", "24" to "圣安东尼奥马刺", "25" to "俄克拉荷马城雷霆", "26" to "犹他爵士", "27" to "华盛顿奇才", "28" to "多伦多猛龙", "29" to "孟菲斯灰熊", "30" to "夏洛特黄蜂")
 val westIds = setOf("6", "7", "9", "10", "12", "13", "16", "21", "22", "23", "24", "25", "26", "29", "3")
 fun JSONArray.objects(): List<JSONObject> = (0 until length()).mapNotNull { optJSONObject(it) }
@@ -64,6 +66,20 @@ fun parseGame(j: JSONObject): Game {
 }
 fun parseEvents(j: JSONObject): List<Game> = j.getJSONArray("events").objects().map(::parseGame)
 fun gamesForDay(games: List<Game>, day: LocalDate, zone: ZoneId): List<Game> = games.distinctBy { it.id }.filter { it.instant?.atZone(zone)?.toLocalDate() == day }.sortedBy { it.instant }
+fun isWinner(game: Game, team: String): Boolean {
+    if(!game.finished) return false
+    val away = game.awayScore.toIntOrNull() ?: return false
+    val home = game.homeScore.toIntOrNull() ?: return false
+    return (team == game.away.id && away > home) || (team == game.home.id && home > away)
+}
+fun homeGames(today: List<Game>, schedule: List<Game>, team: String, now: Instant): List<Game> {
+    if(team.isBlank()) return emptyList()
+    val games = (today+schedule).filter { it.involves(team) }.distinctBy { it.id }
+    val live = games.firstOrNull { it.live }
+    val upcoming = games.filter { it.state=="pre" && it.instant?.let { time -> time>now } == true && !it.statusName.contains("POSTPON") && !it.statusName.contains("CANCEL") }.sortedBy { it.instant }
+    val recent = games.filter { it.finished }.maxByOrNull { it.instant ?: Instant.MIN }
+    return (listOfNotNull(live ?: upcoming.firstOrNull(), recent)+upcoming).distinctBy { it.id }.take(3)
+}
 data class Standing(val team: Team, val east: Boolean, val rank: Int, val wins: Int, val losses: Int, val pct: String)
 data class Table(val season: Int, val rows: List<Standing>)
 fun parseStandings(j: JSONObject): Table {
@@ -84,14 +100,15 @@ data class PlayerLine(val name: String, val dnp: Boolean, val cells: Map<String,
 data class PlayerTable(val team: Team, val players: List<PlayerLine>)
 data class TeamStat(val label: String, val away: String, val home: String)
 data class Detail(val game: Game, val players: List<PlayerTable>, val stats: List<TeamStat>)
-fun parseDetail(j: JSONObject): Detail {
+fun parseDetail(j: JSONObject, playerNames: PlayerNames = PlayerNames()): Detail {
     val game = parseGame(j.getJSONObject("header"))
     val box = j.optJSONObject("boxscore") ?: JSONObject()
     val players = box.array("players").objects().map { block ->
         val group = block.array("statistics").optJSONObject(0) ?: JSONObject()
         val labels = group.array("labels").strings()
         PlayerTable(parseTeam(block.getJSONObject("team")), group.array("athletes").objects().map { p ->
-            PlayerLine(p.getJSONObject("athlete").text("displayName"), p.optBoolean("didNotPlay"), labels.zip(p.array("stats").strings()).toMap())
+            val athlete = p.getJSONObject("athlete")
+            PlayerLine(playerNames.translate(athlete.text("id"), athlete.text("displayName")), p.optBoolean("didNotPlay"), labels.zip(p.array("stats").strings()).toMap())
         })
     }
     val teams = box.array("teams").objects().associate { it.getJSONObject("team").getString("id") to it.array("statistics").objects().associate { s -> s.text("name") to s.text("displayValue", "—") } }
@@ -102,6 +119,7 @@ fun parseDetail(j: JSONObject): Detail {
 data class Loaded<T>(val data: T? = null, val updated: Long = 0, val error: String? = null, val loading: Boolean = false)
 private data class Response(val json: JSONObject, val updated: Long, val error: String? = null)
 class NbaRepository(context: Context) {
+    private val playerNames = context.assets.open("players_zh.json").bufferedReader().use { PlayerNames(JSONArray(it.readText().removePrefix("\uFEFF"))) }
     val bundledTeams: List<Team> = context.assets.open("teams.json").bufferedReader().use { JSONArray(it.readText()).objects().map(::parseTeam) }
     private val cache = File(context.filesDir, "espn-v1").apply { mkdirs() }
     private val client = OkHttpClient.Builder().connectTimeout(12, TimeUnit.SECONDS).readTimeout(18, TimeUnit.SECONDS).callTimeout(25, TimeUnit.SECONDS).build()
@@ -171,6 +189,6 @@ class NbaRepository(context: Context) {
     }
     suspend fun detail(id: String, force: Boolean = false): Loaded<Detail> = load {
         val r = request("game-$id", base + "summary?event=$id", 60000, force) { parseDetail(it) }
-        Loaded(parseDetail(r.json), r.updated, r.error)
+        Loaded(parseDetail(r.json, playerNames), r.updated, r.error)
     }
 }
