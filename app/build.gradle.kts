@@ -9,8 +9,8 @@ android {
         applicationId = "app.courtside.nba"
         minSdk = 24
         targetSdk = 36
-        versionCode = 3
-        versionName = "0.2.0"
+        versionCode = 4
+        versionName = "0.3.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures { compose = true }
@@ -23,6 +23,7 @@ android {
 }
 dependencies {
     implementation("top.yukonga.miuix.kmp:miuix-ui:0.9.4")
+    implementation("io.github.kyant0:backdrop:2.0.1")
     implementation("androidx.activity:activity-compose:1.13.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.11.0")

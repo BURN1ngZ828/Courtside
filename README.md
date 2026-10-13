@@ -1,73 +1,81 @@
 # Courtside 球场边
 
-一个使用 Kotlin、Jetpack Compose 和 miuix 的 NBA Android 小工具。当前版本 0.2.0，供个人安装调试。
+以关注主队、查看比赛为核心的原生 Android NBA 工具。使用 Kotlin、Jetpack Compose 和 **miuix**，配合卡片布局与液态玻璃材质，提供中文界面和真实赛事数据。
 
-## 已实现
+[下载 APK](https://github.com/BURN1ngZ828/Courtside/releases/latest) · [更新日志](CHANGELOG.md) · [问题反馈](https://github.com/BURN1ngZ828/Courtside/issues) · [数据说明](docs/DATA_SOURCES.md)
 
-- 在设置页选择并保存一支主队和主题模式。
-- 四项悬浮导航：首页、赛程、排名、设置；主队选择入口集中在设置页。
-- 比分、战绩、排名及技术统计直接显示。
-- 大标题首页、主队赛场横滑卡片（进行中或下一场优先、最近一场）、今日赛事紧凑列表。
-- 四个 Tab 的短距离滑动与淡入淡出；详情与选队页面推入、返回退出；底栏出现和隐藏动画；标签按压回弹与颜色过渡。
-- 深浅色半透明悬浮胶囊底栏，保留页面滚动状态，底部留白按底栏实际高度调整。
-- 设备时区下的日期赛程、日期跳转、主队筛选。
-- 常规赛东西部排名；未开赛时不编造排名。
-- 比赛详情、分节比分、球队与球员统计切换、双方球队选择；球员姓名固定，表头吸顶，统计列共享横向滚动位置。
-- ESPN 真实数据、应用私有缓存、错误提示、手动刷新。
-- 前台对进行中或已到计划开赛时间的比赛每分钟刷新，后台停止轮询。
-- 内置已核验的 30 队基础资料作为断网时的选队后备；没有内置假比分或演示赛程。
-- 内置 30 队标识；首页、赛程、排名和比赛详情均使用本地资源，避免图片域名不可访问或接口缺少图片字段时丢失图标。
-- 内置 622 条球员中文名，优先按 ESPN 球员 ID 匹配。已有英文比赛缓存也会显示中文名；未收录的新球员或历史球员保留原英文名。
+当前版本 **0.3.0**，供安装调试，欢迎反馈手机上的显示与网络问题。
 
-## 技术与构建
+## 界面
 
-miuix 0.9.4；Android Gradle Plugin 9.4.1；Compose compiler 2.4.20；Gradle 9.7.1。
-最低 API 24，target API 36，compile API 37。编译 SDK 要求不等于安装最低版本。
-使用 JDK 21、Android SDK Platform 37，联网下载 Maven 依赖。
+<img src="docs/screenshots/home.png" width="260" alt="多主队首页" /> <img src="docs/screenshots/detail.png" width="260" alt="主客场与比赛详情" /> <img src="docs/screenshots/players.png" width="260" alt="双语球员统计" />
 
-在 `local.properties` 设置自己的 `sdk.dir`，或配置 `ANDROID_HOME`，然后运行：
+截图来自模拟器，展示截图时获取的数据，不代表当前比分。
+
+## 功能
+
+- **多个主队**：设置中添加或移除；首页切换球队，分别查看进行中、下一场和最近一场。自动迁移旧版本单主队设置。
+- **四个页面**：首页、赛程、排名、设置。缩小并下移的悬浮胶囊底栏，保留按压反馈、选中动画、页面过渡及滚动位置。
+- **卡片与玻璃**：浅色、深色、跟随系统；按系统版本启用背景采样、模糊、折射、高光和阴影，统计正文保持清晰。
+- **赛程**：设备本地日期、日期跳转、全部／当前主队／所有关注球队筛选，显示比分与比赛状态。
+- **比赛详情**：主客队、队标、中英文队名、场馆、分节比分及真实逐次比分曲线，长按拖动查看时刻比分。
+- **球员统计**：中文姓名下显示英文；固定姓名、吸顶表头、同步横向滚动。本队最高值含并列以队伍颜色标记；正负值按实际有符号数比较。在场球员红色姓名与文字提示。
+- **双队颜色**：详情主队蓝色、客队橙色，贯穿比分、分节、曲线和统计；曲线同时用实／虚线区分。
+- **数据与缓存**：ESPN 真实数据、最近成功获取时间、手动刷新、失败保留缓存。前台进行中比赛适度刷新，后台停止持续轮询。
+- **本地资源**：30 队队标、622 条中文球员名，按稳定 ID 匹配；比赛常用显示名参考虎扑，未知球员保留英文。
+
+没有新闻、社区、视频、投注、防剧透、后台通知或桌面小组件。排名为常规赛东西部排名，不以季前赛比分编造战绩。
+
+## 安装
+
+从 [Releases](https://github.com/BURN1ngZ828/Courtside/releases) 下载 APK，在 Android 手机上安装。最低 Android 7.0（API 24）。本仓库四个发布 APK 使用同一签名，支持覆盖更新。
+
+目前发布的是 **debug 测试包**。自行构建、CI 构建和维护者发布包可能签名不同，不能保证互相覆盖安装。不要为此随意卸载已有应用，以免丢失本地主队与设置。
+
+Android 12（API 31）起启用玻璃模糊，Android 13（API 33）起启用镜片折射；旧版本使用半透明材质、高光与阴影。实际效果与设备 GPU 和系统有关，不依赖小米系统专有组件。
+
+## 构建
+
+| 项目 | 锁定版本 |
+| --- | --- |
+| JDK | 21 |
+| Gradle | 9.7.1（Wrapper） |
+| Android Gradle Plugin | 9.4.1 |
+| Kotlin Compose compiler | 2.4.20 |
+| miuix | 0.9.4 |
+| Backdrop | 2.0.1 |
+| Android SDK | compile 37、target 36、min 24 |
+
+安装 Android Studio 或 Android SDK，设置 `ANDROID_HOME`，或在不提交的 `local.properties` 中填写自己的 `sdk.dir`。首次构建需要下载 SDK 和 Maven 依赖。
 
 ```powershell
+# Windows
 .\gradlew.bat :app:assembleDebug :app:testDebugUnitTest
 ```
 
-APK 位于 `app/build/outputs/apk/debug/app-debug.apk`。调试包使用本机 Android debug 签名；本次同一工作环境下后续构建可覆盖安装。其他机器重建时签名可能不同。
+```sh
+# macOS / Linux
+./gradlew :app:assembleDebug :app:testDebugUnitTest
+```
 
-## 数据来源与限制
+APK 位于 `app/build/outputs/apk/debug/app-debug.apk`。无需账户、API Key 或服务端配置。CI 产物供验证，不会自动替代维护者签名的 Release。
 
-数据来源为 ESPN 的公开赛事接口，不需要 API Key；并非官方对外承诺的开发者 API，没有服务等级或持续兼容性保证。仅供当前个人测试，不构成公开分发或商业使用的授权。
+## 数据与准确性
 
-- `site.api.espn.com/apis/site/v2/sports/basketball/nba/teams`
-- 同一基础路径下 `scoreboard?dates=YYYYMMDD&limit=100`
-- `teams/{id}/schedule?season={year}&seasontype={1,2,3}`
-- `summary?event={id}`
-- `site.web.api.espn.com/apis/v2/sports/basketball/nba/standings?season={year}&seasontype=2`
+ESPN 公开网站接口并非承诺长期稳定的开发者 API，可能限流、失效、延迟或改变字段。本项目没有购买服务或官方合作关系。接口、缓存、时区与统计限制见 [数据说明](docs/DATA_SOURCES.md)。
 
-日期查询覆盖相邻来源日期，再按比赛开赛瞬间转换到设备时区并过滤、去重。更新标签表示获取时间，不保证与赛场同步。没有比赛或字段缺失时不补造数值。多日期请求部分失败时明确标记数据不完整。
+曲线仅展示来源提供的真实逐次记录，缺失时明确提示；不造开场与终点。不以首发名单推测在场状态，缓存过期、请求失败或比赛结束时取消在场标记。统计最高值表示数量最大，不表示失误、犯规等指标越高越好。
 
-首次测试时从首页选择主队。若网络失败，可以继续选队，但真实比赛需要 ESPN 可访问；不需要填入密钥。在比赛详情点击刷新可重试。没有新闻、视频、投注或后台通知功能。
+## 验证与迭代
 
-当前没有真实球员图片、复杂玻璃模糊、多队关注、通知、小组件或自动数据源切换。
+0.3.0 debug 构建及 19 项单元测试通过，覆盖时区、解析、异常状态、多主队迁移、加时、统计最高值和比分曲线。已在 API 37 模拟器检查多主队、详情、曲线手势、统计滚动和主题。真实手机上的运行与流畅度仍待反馈。
 
-## 主要源码
+历史版本保留在 Releases。**0.1.0、0.2.0 有原始源码快照；0.1.1 只有原始 APK，未保存准确源码快照**。见 [源码存档说明](docs/SOURCE_PROVENANCE.md)，不将后来的源码误标为旧 APK 构建源码。
 
-- `Data.kt`：模型、JSON 解析、真实数据请求和缓存。
-- `AppViewModel.kt`：页面状态、设置持久化、刷新生命周期。
-- `PlayerNames.kt`、`assets/players_zh.json`：本地中文球员名表与 ID 匹配。
-- `TeamLogos.kt`、`res/drawable-nodpi/`：30 队本地图标。
-- `MainActivity.kt`：miuix 主题、卡片、开关、按钮、悬浮导航和自定义界面。
-- `Screens.kt`：首页、赛程、排名、设置、选队与比赛详情布局。
-- `ParsingTest.kt`：真实响应样本、跨时区日期和异常状态测试。
+提交修改前请阅读 [贡献说明](CONTRIBUTING.md)。发布流程见 [docs/RELEASING.md](docs/RELEASING.md)。
 
-## 第三方
+## 许可证
 
-miuix、AndroidX、Kotlin、OkHttp 等依赖分别遵循其许可证。miuix 项目采用 Apache-2.0。球队名称、标识及赛事数据不因应用源码可见而转移权利。应用无官方合作关系。名称与图标来源见 `ASSET_SOURCES.md`。
+自有源码采用 [Apache License 2.0](LICENSE)。依赖、球队商标与队标、赛事数据及名称资料保留各自权利；源码许可证不赋予这些资源的商业分发许可。见 [资源来源](ASSET_SOURCES.md) 和 [第三方说明](THIRD_PARTY_NOTICES.md)。
 
-参考资料：
-- https://github.com/compose-miuix-ui/miuix/releases/tag/v0.9.4
-- https://github.com/compose-miuix-ui/miuix
-- https://www.espn.com/nba/
-
-## 验证记录
-
-0.2.0 的构建与模拟器验证结果见交付目录中的《0.2.0更新说明.md》。用户手机上的网络、厂商系统行为及动画流畅度仍待安装后反馈。半透明材质当前没有背景实时模糊，也不声称复刻 Apple 系统玻璃效果。
+视觉排版参考用户提供的 F1Info、Apple Music 与虎扑截图，仓库不包含参考截图或第三方人物照片。

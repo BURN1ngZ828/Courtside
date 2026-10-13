@@ -39,7 +39,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
-import top.yukonga.miuix.kmp.basic.FloatingNavigationBar
+import com.kyant.backdrop.Backdrop
+import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
+import com.kyant.backdrop.backdrops.rememberCombinedBackdrop
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.theme.darkColorScheme
@@ -57,7 +60,7 @@ internal val LocalBottomPadding = staticCompositionLocalOf { 140.dp }
 internal val ink: Color @Composable get() = if(LocalDark.current) Color(0xFFF3F4F7) else Color(0xFF18191C)
 internal val muted: Color @Composable get() = if(LocalDark.current) Color(0xFFA0A3AC) else Color(0xFF777A83)
 internal val surface: Color @Composable get() = if(LocalDark.current) Color(0xFF1A1B20) else Color(0xFFF4F4F7)
-internal val sheet: Color @Composable get() = if(LocalDark.current) Color(0xFF15161B) else Color.White
+internal val sheet: Color @Composable get() = if(LocalDark.current) Color(0xFF151C2B).copy(alpha=.32f) else Color.White.copy(alpha=.32f)
 internal val accent: Color @Composable get() = if(LocalDark.current) Color(0xFF9DBBFF) else Color(0xFF2868D9)
 internal val line: Color @Composable get() = if(LocalDark.current) Color.White.copy(alpha=.08f) else Color.Black.copy(alpha=.07f)
 private data class Route(val page: Int, val sub: String, val game: String) {
@@ -78,6 +81,9 @@ private data class Route(val page: Int, val sub: String, val game: String) {
     var sub by rememberSaveable { mutableStateOf("") }
     val pageState = rememberSaveableStateHolder()
     val density = LocalDensity.current
+    val background = rememberLayerBackdrop()
+    val pageBackdrop = rememberLayerBackdrop()
+    val navigationBackdrop = rememberCombinedBackdrop(background, pageBackdrop)
     var barHeight by remember { mutableStateOf(120.dp) }
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val currentPage by rememberUpdatedState(page)
@@ -90,9 +96,10 @@ private data class Route(val page: Int, val sub: String, val game: String) {
     }
     val route = Route(page, sub, vm.detailId)
     MiuixTheme(colors = if(dark) darkColorScheme() else lightColorScheme()) {
-        CompositionLocalProvider(LocalDark provides dark, LocalBottomPadding provides (barHeight + 18.dp)) {
-            Box(Modifier.fillMaxSize().background(if(dark) Color(0xFF090A0D) else Color(0xFFFCFCFD)).statusBarsPadding()) {
-                AnimatedContent(route, modifier = Modifier.fillMaxSize(), contentKey = { it.key }, transitionSpec = {
+        CompositionLocalProvider(LocalDark provides dark, LocalGlassBackdrop provides background, LocalBottomPadding provides (barHeight + 18.dp)) {
+            Box(Modifier.fillMaxSize()) {
+                GlassBackground(background, vm.teams.data.orEmpty().find { it.id == pref.team })
+                AnimatedContent(route, modifier = Modifier.fillMaxSize().statusBarsPadding().layerBackdrop(pageBackdrop), contentKey = { it.key }, transitionSpec = {
                     if(targetState.depth == initialState.depth && targetState.depth == 0) {
                         val direction = if(targetState.page > initialState.page) 1 else -1
                         val distance = with(density) { 24.dp.roundToPx() } * direction
@@ -111,7 +118,7 @@ private data class Route(val page: Int, val sub: String, val game: String) {
                         target.sub == "teams" -> TeamsPage(vm, pref, { sub = "" })
                         else -> pageState.SaveableStateProvider("tab-${target.page}") {
                             when(target.page) {
-                                0 -> HomePage(vm, pref) { page = 1; vm.loadDate(vm.currentDate) }
+                                0 -> HomePage(vm, pref) { page = 1; vm.scheduleFilter=1; vm.loadDate(vm.currentDate) }
                                 1 -> SchedulePage(vm, pref)
                                 2 -> StandingsPage(vm, pref)
                                 else -> SettingsPage(vm, pref) { sub = "teams" }
@@ -122,18 +129,19 @@ private data class Route(val page: Int, val sub: String, val game: String) {
                 AnimatedVisibility(route.depth == 0, Modifier.align(Alignment.BottomCenter),
                     enter = fadeIn(tween(180)) + slideInVertically(tween(220)) { it/3 },
                     exit = fadeOut(tween(140)) + slideOutVertically(tween(180)) { it/3 }) {
-                    Box(Modifier.padding(horizontal=18.dp).widthIn(max=480.dp)
+                    Box(Modifier.navigationBarsPadding().padding(bottom=14.dp).fillMaxWidth(.86f).widthIn(max=480.dp)
                         .onSizeChanged { barHeight = with(density) { it.height.toDp() } }) {
-                        BottomTabs(page) { page = it }
+                        BottomTabs(page, navigationBackdrop) { page = it }
                     }
                 }
             }
         }
     }
 }
-@Composable private fun BottomTabs(page: Int, select: (Int) -> Unit) {
-    FloatingNavigationBar(modifier=Modifier.fillMaxWidth(), color=(if(LocalDark.current) Color(0xFF24252A) else Color(0xFFF5F5F7)).copy(alpha=.90f), showDivider=true, shadowElevation=2.dp) {
-        Row(Modifier.fillMaxWidth().padding(vertical=7.dp).selectableGroup()) {
+@Composable private fun BottomTabs(page: Int, backdrop: Backdrop, select: (Int) -> Unit) {
+    val sheen by animateFloatAsState((page+.5f)/4, spring(dampingRatio=.8f,stiffness=400f),label="glass-light")
+    Box(Modifier.fillMaxWidth().glass(32.dp,backdrop=backdrop,navigation=true,sheen=sheen)) {
+        Row(Modifier.fillMaxWidth().heightIn(min=58.dp).padding(horizontal=6.dp,vertical=4.dp).selectableGroup()) {
             listOf("首页", "赛程", "排名", "设置").forEachIndexed { index, title ->
                 val selected = page == index
                 val tint by animateColorAsState(if(selected) accent else ink.copy(alpha=.78f), tween(190), label="tab-color")
@@ -142,10 +150,10 @@ private data class Route(val page: Int, val sub: String, val game: String) {
                 val scale by animateFloatAsState(if(pressed) .90f else 1f, spring(dampingRatio=.75f, stiffness=650f), label="tab-press")
                 val icon = remember(index) { navIcon(index) }
                 Column(Modifier.weight(1f).selectable(selected, role=Role.Tab, interactionSource=interaction, indication=null, onClick={ select(index) })
-                    .padding(vertical=6.dp).graphicsLayer { scaleX=scale; scaleY=scale },
-                    horizontalAlignment=Alignment.CenterHorizontally, verticalArrangement=Arrangement.spacedBy(4.dp)) {
-                    Image(icon, null, Modifier.size(25.dp), colorFilter=ColorFilter.tint(tint))
-                    Text(title, color=tint, fontSize=12.sp, lineHeight=16.sp, maxLines=1,
+                    .heightIn(min=48.dp).padding(vertical=3.dp).graphicsLayer { scaleX=scale; scaleY=scale },
+                    horizontalAlignment=Alignment.CenterHorizontally, verticalArrangement=Arrangement.spacedBy(3.dp)) {
+                    Image(icon, null, Modifier.size(22.dp), colorFilter=ColorFilter.tint(tint))
+                    Text(title, color=tint, fontSize=11.sp, lineHeight=15.sp, maxLines=1,
                         fontWeight=if(selected) FontWeight.SemiBold else FontWeight.Normal)
                 }
             }

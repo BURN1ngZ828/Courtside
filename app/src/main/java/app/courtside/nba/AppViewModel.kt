@@ -17,14 +17,23 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
+import org.json.JSONArray
 
 private val Context.settings by preferencesDataStore("settings")
-data class Preferences(val team: String = "", val theme: String = "dark")
+data class Preferences(val team: String = "", val theme: String = "dark", val teams: List<String> = if(team.isBlank()) emptyList() else listOf(team))
+fun normalizePreferences(teams: List<String>?, selected: String, theme: String): Preferences {
+    val valid = (teams ?: listOf(selected)).filter { it in chineseNames }.distinct()
+    return Preferences(selected.takeIf { it in valid } ?: valid.firstOrNull().orEmpty(), theme.takeIf { it in listOf("dark", "light", "system") } ?: "dark", valid)
+}
 class AppViewModel(app: Application): AndroidViewModel(app) {
     private val store = app.settings
     private val teamKey = stringPreferencesKey("team")
+    private val teamsKey = stringPreferencesKey("followed_teams")
     private val themeKey = stringPreferencesKey("theme")
-    val preferences = store.data.map { Preferences(it[teamKey] ?: "", it[themeKey] ?: "dark") }
+    val preferences = store.data.map { values ->
+        val ids = values[teamsKey]?.let { runCatching { JSONArray(it).strings() }.getOrDefault(emptyList()) }
+        normalizePreferences(ids, values[teamKey] ?: "", values[themeKey] ?: "dark")
+    }
         .stateIn(viewModelScope, SharingStarted.Eagerly, Preferences())
     private val repo = NbaRepository(app)
     var teams by mutableStateOf(Loaded(data = repo.bundledTeams)); private set
@@ -37,10 +46,12 @@ class AppViewModel(app: Application): AndroidViewModel(app) {
     var currentDate by mutableStateOf(LocalDate.now()); private set
     var season by mutableStateOf(seasonFor(LocalDate.now())); private set
     var detailId by mutableStateOf(""); private set
+    var scheduleFilter by mutableStateOf(0)
     private var dayJob: Job? = null
     private var scheduleJob: Job? = null
     private var detailJob: Job? = null
     private var loadedTeam = ""
+    private val teamSchedules = mutableMapOf<String, Loaded<List<Game>>>()
     private var zone = ZoneId.systemDefault()
     init {
         viewModelScope.launch { teams = teams.copy(loading = true); teams = repo.teams() }
@@ -49,7 +60,17 @@ class AppViewModel(app: Application): AndroidViewModel(app) {
         loadDate(date)
         loadTable()
     }
-    fun setTeam(id: String) { viewModelScope.launch { store.edit { it[teamKey] = id } } }
+    fun setTeam(id: String) { viewModelScope.launch { store.edit { values ->
+        val pref = normalizePreferences(values[teamsKey]?.let { JSONArray(it).strings() }, values[teamKey].orEmpty(), values[themeKey] ?: "dark")
+        if(id in pref.teams) values[teamKey] = id
+    } } }
+    fun toggleTeam(id: String) { if(id !in chineseNames) return; viewModelScope.launch { store.edit { values ->
+        val pref = normalizePreferences(values[teamsKey]?.let { JSONArray(it).strings() }, values[teamKey].orEmpty(), values[themeKey] ?: "dark")
+        val ids = if(id in pref.teams) pref.teams - id else pref.teams + id
+        val next = normalizePreferences(ids, pref.team, pref.theme)
+        values[teamsKey] = JSONArray(next.teams).toString()
+        values[teamKey] = next.team
+    } } }
     fun setTheme(value: String) { viewModelScope.launch { store.edit { it[themeKey] = value } } }
     fun foreground() {
         val newDay = LocalDate.now()
@@ -60,6 +81,7 @@ class AppViewModel(app: Application): AndroidViewModel(app) {
             loadSchedule(); loadTable()
         }
         refreshHome()
+        if(detailId.isNotBlank() && detail.data?.game?.live == true && System.currentTimeMillis()-detail.updated>=60000) openGame(detailId,true)
     }
     fun refreshHome(force: Boolean = false, extras: Boolean = true) {
         if(today.loading) return
@@ -75,9 +97,10 @@ class AppViewModel(app: Application): AndroidViewModel(app) {
     fun loadSchedule(force: Boolean = false) {
         scheduleJob?.cancel()
         if(loadedTeam.isBlank()) { schedule = Loaded(); return }
-        schedule = if(force) schedule.copy(loading = true) else Loaded(loading = true)
+        val cacheKey="$loadedTeam-$season"
+        schedule = (if(force) schedule else teamSchedules[cacheKey] ?: Loaded()).copy(loading = true)
         val id = loadedTeam
-        scheduleJob = viewModelScope.launch { schedule = repo.schedule(id, season, force) }
+        scheduleJob = viewModelScope.launch { val result = repo.schedule(id, season, force); teamSchedules[cacheKey] = result; if(loadedTeam == id) schedule = result }
     }
     fun loadTable(force: Boolean = false) {
         if(table.loading) return

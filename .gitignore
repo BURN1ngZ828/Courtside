@@ -4,3 +4,12 @@
 local.properties
 *.jks
 *.keystore
+.idea/
+.DS_Store
+captures/
+*.apk
+*.aab
+*.zip
+*.pem
+*.p12
+signing.properties

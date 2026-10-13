@@ -15,13 +15,17 @@
     "id": "2528210",
     "english": "Tim Hardaway Jr.",
     "chinese": "小蒂姆·哈达威",
-    "source": "https://nba.hupu.com/players/timhardaway-4814.html"
+    "source": "https://nba.hupu.com/players/timhardaway-4814.html",
+    "matchName": "小哈达威",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-04"
   },
   {
     "id": "2528426",
     "english": "Jordan Clarkson",
     "chinese": "乔丹·克拉克森",
-    "source": "https://nba.hupu.com/players/jordanclarkson-4933.html"
+    "source": "https://nba.hupu.com/players/jordanclarkson-4933.html",
+    "matchName": "克拉克森",
+    "matchNameSource": "Hupu live box-score labels in user-provided reference screenshots (2026-10-13)"
   },
   {
     "id": "2530530",
@@ -33,7 +37,9 @@
     "id": "2531367",
     "english": "Dwight Powell",
     "chinese": "德怀特·鲍威尔",
-    "source": "https://nba.hupu.com/players/dwightpowell-4967.html"
+    "source": "https://nba.hupu.com/players/dwightpowell-4967.html",
+    "matchName": "鲍威尔",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-09"
   },
   {
     "id": "2578185",
@@ -69,7 +75,9 @@
     "id": "2583632",
     "english": "Royce O'Neale",
     "chinese": "罗伊斯·奥尼尔",
-    "source": "https://nba.hupu.com/players/royceoneale-150839.html"
+    "source": "https://nba.hupu.com/players/royceoneale-150839.html",
+    "matchName": "奥尼尔",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-07"
   },
   {
     "id": "2583639",
@@ -81,7 +89,9 @@
     "id": "2595516",
     "english": "Norman Powell",
     "chinese": "诺曼·鲍威尔",
-    "source": "https://nba.hupu.com/players/normanpowell-150062.html"
+    "source": "https://nba.hupu.com/players/normanpowell-150062.html",
+    "matchName": "诺曼-鲍威尔",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-10"
   },
   {
     "id": "2596112",
@@ -111,7 +121,9 @@
     "id": "2990992",
     "english": "Marcus Smart",
     "chinese": "马库斯·斯马特",
-    "source": "https://nba.hupu.com/players/marcussmart-4925.html"
+    "source": "https://nba.hupu.com/players/marcussmart-4925.html",
+    "matchName": "斯马特",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "2991043",
@@ -129,7 +141,9 @@
     "id": "2991139",
     "english": "Kris Dunn",
     "chinese": "克里斯·邓恩",
-    "source": "https://nba.hupu.com/players/krisdunn-150168.html"
+    "source": "https://nba.hupu.com/players/krisdunn-150168.html",
+    "matchName": "邓恩",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "2991230",
@@ -159,19 +173,25 @@
     "id": "2995706",
     "english": "Mario Hezonja",
     "chinese": "马里奥·海佐尼亚",
-    "source": "https://nba.hupu.com/players/mariohezonja-150042.html"
+    "source": "https://nba.hupu.com/players/mariohezonja-150042.html",
+    "matchName": "海佐尼亚",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-09"
   },
   {
     "id": "3032976",
     "english": "Rudy Gobert",
     "chinese": "鲁迪·戈贝尔",
-    "source": "https://nba.hupu.com/players/rudygobert-4834.html"
+    "source": "https://nba.hupu.com/players/rudygobert-4834.html",
+    "matchName": "戈贝尔",
+    "matchNameSource": "Hupu live box-score labels in user-provided reference screenshots (2026-10-13)"
   },
   {
     "id": "3032977",
     "english": "Giannis Antetokounmpo",
     "chinese": "扬尼斯·阿德托昆博",
-    "source": "https://nba.hupu.com/players/giannisantetokounmpo-4802.html"
+    "source": "https://nba.hupu.com/players/giannisantetokounmpo-4802.html",
+    "matchName": "阿德托昆博",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-09"
   },
   {
     "id": "3032979",
@@ -207,7 +227,9 @@
     "id": "3064290",
     "english": "Aaron Gordon",
     "chinese": "阿龙·戈登",
-    "source": "https://nba.hupu.com/players/aarongordon-4944.html"
+    "source": "https://nba.hupu.com/players/aarongordon-4944.html",
+    "matchName": "戈登",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-12"
   },
   {
     "id": "3064440",
@@ -225,13 +247,17 @@
     "id": "3064514",
     "english": "Julius Randle",
     "chinese": "朱利叶斯·兰德尔",
-    "source": "https://nba.hupu.com/players/juliusrandle-4932.html"
+    "source": "https://nba.hupu.com/players/juliusrandle-4932.html",
+    "matchName": "兰德尔",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-13"
   },
   {
     "id": "3064560",
     "english": "Luke Kornet",
     "chinese": "卢克·科内特",
-    "source": "https://nba.hupu.com/players/lukekornet-150789.html"
+    "source": "https://nba.hupu.com/players/lukekornet-150789.html",
+    "matchName": "科内特",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "3078576",
@@ -261,7 +287,9 @@
     "id": "3112335",
     "english": "Nikola Jokic",
     "chinese": "尼古拉·约基奇",
-    "source": "https://nba.hupu.com/players/nikolajokic-4943.html"
+    "source": "https://nba.hupu.com/players/nikolajokic-4943.html",
+    "matchName": "约基奇",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-12"
   },
   {
     "id": "3133602",
@@ -285,7 +313,9 @@
     "id": "3133628",
     "english": "Myles Turner",
     "chinese": "迈尔斯·特纳",
-    "source": "https://nba.hupu.com/players/mylesturner-150026.html"
+    "source": "https://nba.hupu.com/players/mylesturner-150026.html",
+    "matchName": "特纳",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-08"
   },
   {
     "id": "3133635",
@@ -327,25 +357,33 @@
     "id": "3135046",
     "english": "Tyus Jones",
     "chinese": "泰厄斯·琼斯",
-    "source": "https://nba.hupu.com/players/tyusjones-150038.html"
+    "source": "https://nba.hupu.com/players/tyusjones-150038.html",
+    "matchName": "琼斯",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-07"
   },
   {
     "id": "3136193",
     "english": "Devin Booker",
     "chinese": "德文·布克",
-    "source": "https://nba.hupu.com/players/devinbooker-150044.html"
+    "source": "https://nba.hupu.com/players/devinbooker-150044.html",
+    "matchName": "布克",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-06"
   },
   {
     "id": "3136195",
     "english": "Karl-Anthony Towns",
     "chinese": "卡尔·安东尼·唐斯",
-    "source": "https://nba.hupu.com/players/karlanthonytowns-150037.html"
+    "source": "https://nba.hupu.com/players/karlanthonytowns-150037.html",
+    "matchName": "唐斯",
+    "matchNameSource": "Hupu live box-score labels in user-provided reference screenshots (2026-10-13)"
   },
   {
     "id": "3136196",
     "english": "Trey Lyles",
     "chinese": "特雷·莱尔斯",
-    "source": "https://nba.hupu.com/players/treylyles-150059.html"
+    "source": "https://nba.hupu.com/players/treylyles-150059.html",
+    "matchName": "莱尔斯",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "3136777",
@@ -369,37 +407,49 @@
     "id": "3146557",
     "english": "Jock Landale",
     "chinese": "乔克·兰代尔",
-    "source": "https://nba.hupu.com/players/jocklandale-152642.html"
+    "source": "https://nba.hupu.com/players/jocklandale-152642.html",
+    "matchName": "兰代尔",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-13"
   },
   {
     "id": "3147657",
     "english": "Mikal Bridges",
     "chinese": "米卡尔·布里奇斯",
-    "source": "https://nba.hupu.com/players/mikalbridges-150953.html"
+    "source": "https://nba.hupu.com/players/mikalbridges-150953.html",
+    "matchName": "布里奇斯",
+    "matchNameSource": "Hupu live box-score labels in user-provided reference screenshots (2026-10-13)"
   },
   {
     "id": "3149673",
     "english": "Pascal Siakam",
     "chinese": "帕斯卡尔·西亚卡姆",
-    "source": "https://nba.hupu.com/players/pascalsiakam-150219.html"
+    "source": "https://nba.hupu.com/players/pascalsiakam-150219.html",
+    "matchName": "西亚卡姆",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "3150844",
     "english": "Moritz Wagner",
     "chinese": "莫里茨·瓦格纳",
-    "source": "https://nba.hupu.com/players/moritzwagner-150989.html"
+    "source": "https://nba.hupu.com/players/moritzwagner-150989.html",
+    "matchName": "瓦格纳",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-13"
   },
   {
     "id": "3155526",
     "english": "Dillon Brooks",
     "chinese": "狄龙·布鲁克斯",
-    "source": "https://nba.hupu.com/players/dillonbrooks-150497.html"
+    "source": "https://nba.hupu.com/players/dillonbrooks-150497.html",
+    "matchName": "狄龙",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-08"
   },
   {
     "id": "3155535",
     "english": "Kevon Looney",
     "chinese": "凯文·卢尼",
-    "source": "https://nba.hupu.com/players/kevonlooney-150023.html"
+    "source": "https://nba.hupu.com/players/kevonlooney-150023.html",
+    "matchName": "卢尼",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-06"
   },
   {
     "id": "3155937",
@@ -447,7 +497,9 @@
     "id": "3448",
     "english": "Brook Lopez",
     "chinese": "布鲁克·洛佩斯",
-    "source": "https://nba.hupu.com/players/brooklopez-3013.html"
+    "source": "https://nba.hupu.com/players/brooklopez-3013.html",
+    "matchName": "洛佩斯",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "3899664",
@@ -471,7 +523,9 @@
     "id": "3907497",
     "english": "Dejounte Murray",
     "chinese": "德章泰·默里",
-    "source": "https://nba.hupu.com/players/dejountemurray-150181.html"
+    "source": "https://nba.hupu.com/players/dejountemurray-150181.html",
+    "matchName": "默里",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-07"
   },
   {
     "id": "3907498",
@@ -489,7 +543,9 @@
     "id": "3908809",
     "english": "Donovan Mitchell",
     "chinese": "多诺万·米切尔",
-    "source": "https://nba.hupu.com/players/donovanmitchell-150510.html"
+    "source": "https://nba.hupu.com/players/donovanmitchell-150510.html",
+    "matchName": "米切尔",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-12"
   },
   {
     "id": "3908845",
@@ -507,7 +563,9 @@
     "id": "3913174",
     "english": "Luke Kennard",
     "chinese": "卢克·肯纳德",
-    "source": "https://nba.hupu.com/players/lukekennard-150505.html"
+    "source": "https://nba.hupu.com/players/lukekennard-150505.html",
+    "matchName": "肯纳德",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "3913176",
@@ -519,7 +577,9 @@
     "id": "3914044",
     "english": "Landry Shamet",
     "chinese": "兰德里·沙梅特",
-    "source": "https://nba.hupu.com/players/landryshamet-150977.html"
+    "source": "https://nba.hupu.com/players/landryshamet-150977.html",
+    "matchName": "沙梅特",
+    "matchNameSource": "Hupu live box-score labels in user-provided reference screenshots (2026-10-13)"
   },
   {
     "id": "3914285",
@@ -531,13 +591,17 @@
     "id": "3917376",
     "english": "Jaylen Brown",
     "chinese": "杰伦·布朗",
-    "source": "https://nba.hupu.com/players/jaylenbrown-150166.html"
+    "source": "https://nba.hupu.com/players/jaylenbrown-150166.html",
+    "matchName": "布朗",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-09"
   },
   {
     "id": "3934672",
     "english": "Jalen Brunson",
     "chinese": "杰伦·布伦森",
-    "source": "https://nba.hupu.com/players/jalenbrunson-150988.html"
+    "source": "https://nba.hupu.com/players/jalenbrunson-150988.html",
+    "matchName": "布伦森",
+    "matchNameSource": "Hupu live box-score labels in user-provided reference screenshots (2026-10-13)"
   },
   {
     "id": "3934673",
@@ -549,7 +613,9 @@
     "id": "3934719",
     "english": "OG Anunoby",
     "chinese": "OG·阿奴诺比",
-    "source": "https://nba.hupu.com/players/oganunoby-150508.html"
+    "source": "https://nba.hupu.com/players/oganunoby-150508.html",
+    "matchName": "阿奴诺比",
+    "matchNameSource": "Hupu live box-score labels in user-provided reference screenshots (2026-10-13)"
   },
   {
     "id": "3934723",
@@ -579,7 +645,9 @@
     "id": "3945274",
     "english": "Luka Doncic",
     "chinese": "卢卡·东契奇",
-    "source": "https://nba.hupu.com/players/lukadoncic-150648.html"
+    "source": "https://nba.hupu.com/players/lukadoncic-150648.html",
+    "matchName": "东契奇",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-09"
   },
   {
     "id": "3950760",
@@ -603,13 +671,17 @@
     "id": "3992",
     "english": "James Harden",
     "chinese": "詹姆斯·哈登",
-    "source": "https://nba.hupu.com/players/jamesharden-3306.html"
+    "source": "https://nba.hupu.com/players/jamesharden-3306.html",
+    "matchName": "哈登",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-12"
   },
   {
     "id": "3995",
     "english": "Jrue Holiday",
     "chinese": "朱·霍勒迪",
-    "source": "https://nba.hupu.com/players/jrueholiday-3346.html"
+    "source": "https://nba.hupu.com/players/jrueholiday-3346.html",
+    "matchName": "霍勒迪",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-08"
   },
   {
     "id": "3999",
@@ -669,7 +741,9 @@
     "id": "4065733",
     "english": "Ty Jerome",
     "chinese": "泰·杰罗姆",
-    "source": "https://nba.hupu.com/players/tyjerome-151717.html"
+    "source": "https://nba.hupu.com/players/tyjerome-151717.html",
+    "matchName": "杰罗姆",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-10"
   },
   {
     "id": "4065778",
@@ -735,19 +809,25 @@
     "id": "4066328",
     "english": "Jarrett Allen",
     "chinese": "贾勒特·阿伦",
-    "source": "https://nba.hupu.com/players/jarrettallen-150441.html"
+    "source": "https://nba.hupu.com/players/jarrettallen-150441.html",
+    "matchName": "阿伦",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-12"
   },
   {
     "id": "4066336",
     "english": "Lauri Markkanen",
     "chinese": "劳里·马尔卡宁",
-    "source": "https://nba.hupu.com/players/laurimarkkanen-150439.html"
+    "source": "https://nba.hupu.com/players/laurimarkkanen-150439.html",
+    "matchName": "马尔卡宁",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-05"
   },
   {
     "id": "4066354",
     "english": "Payton Pritchard",
     "chinese": "佩顿·普里查德",
-    "source": "https://nba.hupu.com/players/paytonpritchard-152381.html"
+    "source": "https://nba.hupu.com/players/paytonpritchard-152381.html",
+    "matchName": "普里查德",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "4066372",
@@ -759,7 +839,9 @@
     "id": "4066383",
     "english": "Miles Bridges",
     "chinese": "迈尔斯·布里奇斯",
-    "source": "https://nba.hupu.com/players/milesbridges-150440.html"
+    "source": "https://nba.hupu.com/players/milesbridges-150440.html",
+    "matchName": "布里奇斯",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-06"
   },
   {
     "id": "4066399",
@@ -777,13 +859,17 @@
     "id": "4066457",
     "english": "Austin Reaves",
     "chinese": "奥斯汀·里夫斯",
-    "source": "https://nba.hupu.com/players/austinreaves-152614.html"
+    "source": "https://nba.hupu.com/players/austinreaves-152614.html",
+    "matchName": "里夫斯",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-09"
   },
   {
     "id": "4066648",
     "english": "Rui Hachimura",
     "chinese": "八村垒",
-    "source": "https://nba.hupu.com/players/ruihachimura-151687.html"
+    "source": "https://nba.hupu.com/players/ruihachimura-151687.html",
+    "matchName": "八村垒",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "4066650",
@@ -843,7 +929,9 @@
     "id": "4277848",
     "english": "Marvin Bagley III",
     "chinese": "马文·巴格利",
-    "source": "https://nba.hupu.com/players/marvinbagley-150922.html"
+    "source": "https://nba.hupu.com/players/marvinbagley-150922.html",
+    "matchName": "巴格利",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-07"
   },
   {
     "id": "4277869",
@@ -867,13 +955,17 @@
     "id": "4277905",
     "english": "Trae Young",
     "chinese": "特雷·杨",
-    "source": "https://nba.hupu.com/players/traeyoung-150951.html"
+    "source": "https://nba.hupu.com/players/traeyoung-150951.html",
+    "matchName": "杨",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-13"
   },
   {
     "id": "4277919",
     "english": "Mo Bamba",
     "chinese": "穆罕默德·班巴",
-    "source": "https://nba.hupu.com/players/mobamba-150935.html"
+    "source": "https://nba.hupu.com/players/mobamba-150935.html",
+    "matchName": "班巴",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-07"
   },
   {
     "id": "4277922",
@@ -891,13 +983,17 @@
     "id": "4277951",
     "english": "Luka Garza",
     "chinese": "卢卡·加尔扎",
-    "source": "https://nba.hupu.com/players/lukagarza-152595.html"
+    "source": "https://nba.hupu.com/players/lukagarza-152595.html",
+    "matchName": "加尔扎",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-09"
   },
   {
     "id": "4277956",
     "english": "Jordan Poole",
     "chinese": "乔丹·普尔",
-    "source": "https://nba.hupu.com/players/jordanpoole-151747.html"
+    "source": "https://nba.hupu.com/players/jordanpoole-151747.html",
+    "matchName": "普尔",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-09"
   },
   {
     "id": "4277961",
@@ -921,7 +1017,9 @@
     "id": "4278053",
     "english": "Davion Mitchell",
     "chinese": "戴维恩·米切尔",
-    "source": "https://nba.hupu.com/players/davionmitchell-152640.html"
+    "source": "https://nba.hupu.com/players/davionmitchell-152640.html",
+    "matchName": "米切尔",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-09"
   },
   {
     "id": "4278067",
@@ -945,13 +1043,17 @@
     "id": "4278076",
     "english": "Nick Richards",
     "chinese": "尼克·理查兹",
-    "source": "https://nba.hupu.com/players/nickrichards-152397.html"
+    "source": "https://nba.hupu.com/players/nickrichards-152397.html",
+    "matchName": "理查兹",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "4278077",
     "english": "Jarred Vanderbilt",
     "chinese": "贾里德·范德比尔特",
-    "source": "https://nba.hupu.com/players/jarredvanderbilt-150993.html"
+    "source": "https://nba.hupu.com/players/jarredvanderbilt-150993.html",
+    "matchName": "范德比尔特",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-09"
   },
   {
     "id": "4278078",
@@ -963,13 +1065,17 @@
     "id": "4278104",
     "english": "Michael Porter Jr.",
     "chinese": "小迈克尔·波特",
-    "source": "https://nba.hupu.com/players/michaelporter-150924.html"
+    "source": "https://nba.hupu.com/players/michaelporter-150924.html",
+    "matchName": "波特",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-13"
   },
   {
     "id": "4278129",
     "english": "Deandre Ayton",
     "chinese": "德安德烈·艾顿",
-    "source": "https://nba.hupu.com/players/deandreayton-150920.html"
+    "source": "https://nba.hupu.com/players/deandreayton-150920.html",
+    "matchName": "艾顿",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-09"
   },
   {
     "id": "4278355",
@@ -987,13 +1093,17 @@
     "id": "4278402",
     "english": "Jordan Goodwin",
     "chinese": "乔丹·古德温",
-    "source": "https://nba.hupu.com/players/jordangoodwin-152662.html"
+    "source": "https://nba.hupu.com/players/jordangoodwin-152662.html",
+    "matchName": "古德温",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-06"
   },
   {
     "id": "4278562",
     "english": "Paul Reed",
     "chinese": "保罗·里德",
-    "source": "https://nba.hupu.com/players/paulreed-152374.html"
+    "source": "https://nba.hupu.com/players/paulreed-152374.html",
+    "matchName": "里德",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-06"
   },
   {
     "id": "4278572",
@@ -1005,7 +1115,9 @@
     "id": "4278580",
     "english": "Sandro Mamukelashvili",
     "chinese": "桑德罗·马穆凯拉什维利",
-    "source": "https://nba.hupu.com/players/sandromamukelashvili-152618.html"
+    "source": "https://nba.hupu.com/players/sandromamukelashvili-152618.html",
+    "matchName": "马穆凯拉什维利",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-07"
   },
   {
     "id": "4278585",
@@ -1047,7 +1159,9 @@
     "id": "4280151",
     "english": "Corey Kispert",
     "chinese": "科里·基斯珀特",
-    "source": "https://nba.hupu.com/players/coreykispert-152651.html"
+    "source": "https://nba.hupu.com/players/coreykispert-152651.html",
+    "matchName": "基斯珀特",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-06"
   },
   {
     "id": "4280245",
@@ -1089,7 +1203,9 @@
     "id": "4395625",
     "english": "RJ Barrett",
     "chinese": "RJ·巴雷特",
-    "source": "https://nba.hupu.com/players/rjbarrett-151670.html"
+    "source": "https://nba.hupu.com/players/rjbarrett-151670.html",
+    "matchName": "巴雷特",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "4395626",
@@ -1143,7 +1259,9 @@
     "id": "4395723",
     "english": "Keldon Johnson",
     "chinese": "凯尔登·约翰逊",
-    "source": "https://nba.hupu.com/players/keldonjohnson-151710.html"
+    "source": "https://nba.hupu.com/players/keldonjohnson-151710.html",
+    "matchName": "约翰逊",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-09"
   },
   {
     "id": "4395724",
@@ -1155,7 +1273,9 @@
     "id": "4395725",
     "english": "Tyler Herro",
     "chinese": "泰勒·希罗",
-    "source": "https://nba.hupu.com/players/tylerherro-151713.html"
+    "source": "https://nba.hupu.com/players/tylerherro-151713.html",
+    "matchName": "希罗",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-12"
   },
   {
     "id": "4396818",
@@ -1167,13 +1287,17 @@
     "id": "4396907",
     "english": "Darius Garland",
     "chinese": "达里厄斯·加兰",
-    "source": "https://nba.hupu.com/players/dariusgarland-151704.html"
+    "source": "https://nba.hupu.com/players/dariusgarland-151704.html",
+    "matchName": "加兰",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-05"
   },
   {
     "id": "4396909",
     "english": "Aaron Nesmith",
     "chinese": "阿龙·内史密斯",
-    "source": "https://nba.hupu.com/players/aaronnesmith-152366.html"
+    "source": "https://nba.hupu.com/players/aaronnesmith-152366.html",
+    "matchName": "内史密斯",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-08"
   },
   {
     "id": "4396963",
@@ -1287,7 +1411,9 @@
     "id": "4397424",
     "english": "Neemias Queta",
     "chinese": "内米亚斯·克塔",
-    "source": "https://nba.hupu.com/players/neemiasqueta-152641.html"
+    "source": "https://nba.hupu.com/players/neemiasqueta-152641.html",
+    "matchName": "克塔",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "4397449",
@@ -1335,7 +1461,9 @@
     "id": "4397886",
     "english": "Charles Bassey",
     "chinese": "查尔斯·巴锡",
-    "source": "https://nba.hupu.com/players/charlesbassey-152637.html"
+    "source": "https://nba.hupu.com/players/charlesbassey-152637.html",
+    "matchName": "巴锡",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-05"
   },
   {
     "id": "4398207",
@@ -1371,7 +1499,9 @@
     "id": "4431671",
     "english": "Jaden McDaniels",
     "chinese": "杰登·麦克丹尼尔斯",
-    "source": "https://nba.hupu.com/players/jadenmcdaniels-152408.html"
+    "source": "https://nba.hupu.com/players/jadenmcdaniels-152408.html",
+    "matchName": "麦克丹尼尔斯",
+    "matchNameSource": "Hupu live box-score labels in user-provided reference screenshots (2026-10-13)"
   },
   {
     "id": "4431675",
@@ -1389,7 +1519,9 @@
     "id": "4431679",
     "english": "Precious Achiuwa",
     "chinese": "普雷舍斯·阿丘瓦",
-    "source": "https://nba.hupu.com/players/preciousachiuwa-152364.html"
+    "source": "https://nba.hupu.com/players/preciousachiuwa-152364.html",
+    "matchName": "阿丘瓦",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-09"
   },
   {
     "id": "4431680",
@@ -1569,7 +1701,9 @@
     "id": "4432194",
     "english": "Day'Ron Sharpe",
     "chinese": "戴罗恩·夏普",
-    "source": "https://nba.hupu.com/players/dayronsharpe-152621.html"
+    "source": "https://nba.hupu.com/players/dayronsharpe-152621.html",
+    "matchName": "夏普",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-07"
   },
   {
     "id": "4432241",
@@ -1581,7 +1715,9 @@
     "id": "4432247",
     "english": "Jaylen Clark",
     "chinese": "杰伦·克拉克",
-    "source": "https://nba.hupu.com/players/jaylenclark-153010.html"
+    "source": "https://nba.hupu.com/players/jaylenclark-153010.html",
+    "matchName": "克拉克",
+    "matchNameSource": "Hupu live box-score labels in user-provided reference screenshots (2026-10-13)"
   },
   {
     "id": "4432446",
@@ -1659,7 +1795,9 @@
     "id": "4432816",
     "english": "LaMelo Ball",
     "chinese": "拉梅洛·鲍尔",
-    "source": "https://nba.hupu.com/players/lameloball-152355.html"
+    "source": "https://nba.hupu.com/players/lameloball-152355.html",
+    "matchName": "鲍尔",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-13"
   },
   {
     "id": "4432819",
@@ -1737,7 +1875,9 @@
     "id": "4433134",
     "english": "Scottie Barnes",
     "chinese": "斯科蒂·巴恩斯",
-    "source": "https://nba.hupu.com/players/scottiebarnes-152653.html"
+    "source": "https://nba.hupu.com/players/scottiebarnes-152653.html",
+    "matchName": "巴恩斯",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "4433136",
@@ -1815,7 +1955,9 @@
     "id": "4433249",
     "english": "Moussa Diabate",
     "chinese": "穆萨·迪亚巴特",
-    "source": "https://nba.hupu.com/players/moussadiabate-152869.html"
+    "source": "https://nba.hupu.com/players/moussadiabate-152869.html",
+    "matchName": "迪亚巴特",
+    "matchNameSource": "Hupu live box-score labels in user-provided reference screenshots (2026-10-13)"
   },
   {
     "id": "4433255",
@@ -1911,7 +2053,9 @@
     "id": "4566434",
     "english": "Franz Wagner",
     "chinese": "弗朗茨·瓦格纳",
-    "source": "https://nba.hupu.com/players/franzwagner-152632.html"
+    "source": "https://nba.hupu.com/players/franzwagner-152632.html",
+    "matchName": "瓦格纳",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-08"
   },
   {
     "id": "4576060",
@@ -1995,7 +2139,9 @@
     "id": "4592492",
     "english": "Bones Hyland",
     "chinese": "纳肖恩·海兰德",
-    "source": "https://nba.hupu.com/players/boneshyland-152592.html"
+    "source": "https://nba.hupu.com/players/boneshyland-152592.html",
+    "matchName": "海兰德",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "4592686",
@@ -2103,7 +2249,9 @@
     "id": "4594268",
     "english": "Anthony Edwards",
     "chinese": "安东尼·爱德华兹",
-    "source": "https://nba.hupu.com/players/anthonyedwards-152352.html"
+    "source": "https://nba.hupu.com/players/anthonyedwards-152352.html",
+    "matchName": "爱德华兹",
+    "matchNameSource": "Hupu live box-score labels in user-provided reference screenshots (2026-10-13)"
   },
   {
     "id": "4594326",
@@ -2163,7 +2311,9 @@
     "id": "4683021",
     "english": "Deni Avdija",
     "chinese": "德尼·阿夫迪亚",
-    "source": "https://nba.hupu.com/players/deniavdija-152356.html"
+    "source": "https://nba.hupu.com/players/deniavdija-152356.html",
+    "matchName": "阿夫迪亚",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-08"
   },
   {
     "id": "4683634",
@@ -2391,7 +2541,9 @@
     "id": "4701230",
     "english": "Jalen Johnson",
     "chinese": "杰伦·约翰逊",
-    "source": "https://nba.hupu.com/players/jalenjohnson-152583.html"
+    "source": "https://nba.hupu.com/players/jalenjohnson-152583.html",
+    "matchName": "约翰逊",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "4701232",
@@ -2685,13 +2837,17 @@
     "id": "4871144",
     "english": "Alperen Sengun",
     "chinese": "阿尔佩伦·申京",
-    "source": "https://nba.hupu.com/players/alperenŞengun-152602.html"
+    "source": "https://nba.hupu.com/players/alperenŞengun-152602.html",
+    "matchName": "申京",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-09"
   },
   {
     "id": "4871145",
     "english": "Josh Giddey",
     "chinese": "约什·吉迪",
-    "source": "https://nba.hupu.com/players/joshgiddey-152646.html"
+    "source": "https://nba.hupu.com/players/joshgiddey-152646.html",
+    "matchName": "吉迪",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-12"
   },
   {
     "id": "4873090",
@@ -3597,7 +3753,9 @@
     "id": "6442",
     "english": "Kyrie Irving",
     "chinese": "凯里·欧文",
-    "source": "https://nba.hupu.com/players/kyrieirving-3554.html"
+    "source": "https://nba.hupu.com/players/kyrieirving-3554.html",
+    "matchName": "欧文",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "6450",
@@ -3633,19 +3791,25 @@
     "id": "6583",
     "english": "Anthony Davis",
     "chinese": "安东尼·戴维斯",
-    "source": "https://nba.hupu.com/players/anthonydavis-3638.html"
+    "source": "https://nba.hupu.com/players/anthonydavis-3638.html",
+    "matchName": "戴维斯",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-11"
   },
   {
     "id": "6585",
     "english": "Andre Drummond",
     "chinese": "安德烈·德拉蒙德",
-    "source": "https://nba.hupu.com/players/andredrummond-3646.html"
+    "source": "https://nba.hupu.com/players/andredrummond-3646.html",
+    "matchName": "德拉蒙德",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-13"
   },
   {
     "id": "6589",
     "english": "Draymond Green",
     "chinese": "德雷蒙德·格林",
-    "source": "https://nba.hupu.com/players/draymondgreen-3672.html"
+    "source": "https://nba.hupu.com/players/draymondgreen-3672.html",
+    "matchName": "格林",
+    "matchNameSource": "https://nba.hupu.com/games/2026-10-07"
   },
   {
     "id": "6606",

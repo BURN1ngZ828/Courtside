@@ -25,6 +25,7 @@ data class Team(val id: String, val abbr: String, val english: String, val logo:
     val shortName: String get() = shortNames[id] ?: name
 }
 private val shortNames = listOf("老鹰", "凯尔特人", "鹈鹕", "公牛", "骑士", "独行侠", "掘金", "活塞", "勇士", "火箭", "步行者", "快船", "湖人", "热火", "雄鹿", "森林狼", "篮网", "尼克斯", "魔术", "76人", "太阳", "开拓者", "国王", "马刺", "雷霆", "爵士", "奇才", "猛龙", "灰熊", "黄蜂").mapIndexed { index, name -> (index+1).toString() to name }.toMap()
+fun shortTeamName(id: String) = shortNames[id] ?: chineseNames[id] ?: id
 val chineseNames = mapOf("1" to "亚特兰大老鹰", "2" to "波士顿凯尔特人", "3" to "新奥尔良鹈鹕", "4" to "芝加哥公牛", "5" to "克利夫兰骑士", "6" to "达拉斯独行侠", "7" to "丹佛掘金", "8" to "底特律活塞", "9" to "金州勇士", "10" to "休斯敦火箭", "11" to "印第安纳步行者", "12" to "洛杉矶快船", "13" to "洛杉矶湖人", "14" to "迈阿密热火", "15" to "密尔沃基雄鹿", "16" to "明尼苏达森林狼", "17" to "布鲁克林篮网", "18" to "纽约尼克斯", "19" to "奥兰多魔术", "20" to "费城76人", "21" to "菲尼克斯太阳", "22" to "波特兰开拓者", "23" to "萨克拉门托国王", "24" to "圣安东尼奥马刺", "25" to "俄克拉荷马城雷霆", "26" to "犹他爵士", "27" to "华盛顿奇才", "28" to "多伦多猛龙", "29" to "孟菲斯灰熊", "30" to "夏洛特黄蜂")
 val westIds = setOf("6", "7", "9", "10", "12", "13", "16", "21", "22", "23", "24", "25", "26", "29", "3")
 fun JSONArray.objects(): List<JSONObject> = (0 until length()).mapNotNull { optJSONObject(it) }
@@ -96,25 +97,69 @@ fun parseStandings(j: JSONObject): Table {
     }
     return Table(season, rows)
 }
-data class PlayerLine(val name: String, val dnp: Boolean, val cells: Map<String, String>)
+data class PlayerLine(val name: String, val dnp: Boolean, val cells: Map<String, String>, val id: String = "", val english: String = "", val onCourt: Boolean = false, val starter: Boolean = false)
 data class PlayerTable(val team: Team, val players: List<PlayerLine>)
 data class TeamStat(val label: String, val away: String, val home: String)
-data class Detail(val game: Game, val players: List<PlayerTable>, val stats: List<TeamStat>)
+data class ScorePoint(val elapsed: Int, val period: Int, val clock: String, val away: Int, val home: Int)
+data class Detail(val game: Game, val players: List<PlayerTable>, val stats: List<TeamStat>, val points: List<ScorePoint> = emptyList(), val curveComplete: Boolean = false)
 fun parseDetail(j: JSONObject, playerNames: PlayerNames = PlayerNames()): Detail {
-    val game = parseGame(j.getJSONObject("header"))
+    val parsed = parseGame(j.getJSONObject("header"))
+    val game = parsed.copy(venue = parsed.venue.ifBlank { j.optJSONObject("gameInfo")?.optJSONObject("venue")?.text("fullName") ?: "" })
     val box = j.optJSONObject("boxscore") ?: JSONObject()
     val players = box.array("players").objects().map { block ->
         val group = block.array("statistics").optJSONObject(0) ?: JSONObject()
         val labels = group.array("labels").strings()
         PlayerTable(parseTeam(block.getJSONObject("team")), group.array("athletes").objects().map { p ->
             val athlete = p.getJSONObject("athlete")
-            PlayerLine(playerNames.translate(athlete.text("id"), athlete.text("displayName")), p.optBoolean("didNotPlay"), labels.zip(p.array("stats").strings()).toMap())
+            PlayerLine(playerNames.matchName(athlete.text("id"), athlete.text("displayName")), p.optBoolean("didNotPlay"), labels.zip(p.array("stats").strings()).toMap(), athlete.text("id"), athlete.text("displayName"), game.live && p.optBoolean("active"), p.optBoolean("starter"))
         })
     }
     val teams = box.array("teams").objects().associate { it.getJSONObject("team").getString("id") to it.array("statistics").objects().associate { s -> s.text("name") to s.text("displayValue", "—") } }
-    val names = linkedMapOf("fieldGoalsMade-fieldGoalsAttempted" to "投篮", "threePointFieldGoalsMade-threePointFieldGoalsAttempted" to "三分", "freeThrowsMade-freeThrowsAttempted" to "罚球", "totalRebounds" to "篮板", "assists" to "助攻", "turnovers" to "失误", "steals" to "抢断", "blocks" to "盖帽")
-    return Detail(game, players, names.map { (k, v) -> TeamStat(v, teams[game.away.id]?.get(k) ?: "—", teams[game.home.id]?.get(k) ?: "—") })
+    val names = linkedMapOf("fieldGoalsMade-fieldGoalsAttempted" to "投篮", "threePointFieldGoalsMade-threePointFieldGoalsAttempted" to "三分", "freeThrowsMade-freeThrowsAttempted" to "罚球", "totalRebounds" to "篮板", "assists" to "助攻", "turnovers" to "失误", "steals" to "抢断", "blocks" to "盖帽", "offensiveRebounds" to "前场篮板", "defensiveRebounds" to "后场篮板", "fouls" to "犯规")
+    val points = parseScorePoints(j.array("plays"))
+    val last = points.lastOrNull()
+    // A missing beginning or missing tail must never be presented as a complete game trace.
+    val complete = points.firstOrNull()?.let { it.elapsed == 0 && it.away == 0 && it.home == 0 } == true && last?.away == game.awayScore.toIntOrNull() && last?.home == game.homeScore.toIntOrNull()
+    return Detail(game, players, names.map { (k, v) -> TeamStat(v, teams[game.away.id]?.get(k) ?: "—", teams[game.home.id]?.get(k) ?: "—") }, points, complete)
 }
+
+fun elapsedSeconds(period: Int, clock: String): Int? {
+    if(period < 1) return null
+    val bits = clock.split(":")
+    if(bits.size != 2) return null
+    val minutes = bits[0].toIntOrNull() ?: return null
+    val seconds = bits[1].toIntOrNull() ?: return null
+    val length = if(period <= 4) 720 else 300
+    val remaining = minutes * 60 + seconds
+    if(minutes < 0 || seconds !in 0..59 || remaining !in 0..length) return null
+    return (if(period <= 4) (period - 1) * 720 else 2880 + (period - 5) * 300) + length - remaining
+}
+
+fun parseScorePoints(plays: JSONArray): List<ScorePoint> = plays.objects().mapIndexedNotNull { index, p ->
+    val period = p.optJSONObject("period")?.optInt("number") ?: return@mapIndexedNotNull null
+    val clock = p.optJSONObject("clock")?.text("displayValue") ?: return@mapIndexedNotNull null
+    val elapsed = elapsedSeconds(period, clock) ?: return@mapIndexedNotNull null
+    if(p.isNull("homeScore") || p.isNull("awayScore")) return@mapIndexedNotNull null
+    val home = p.text("homeScore").toIntOrNull() ?: return@mapIndexedNotNull null
+    val away = p.text("awayScore").toIntOrNull() ?: return@mapIndexedNotNull null
+    if(home < 0 || away < 0) return@mapIndexedNotNull null
+    Triple(elapsed, p.text("sequenceNumber").toLongOrNull() ?: index.toLong(), ScorePoint(elapsed, period, clock, away, home))
+}.sortedWith(compareBy({ it.first }, { it.second })).map { it.third }.distinct()
+
+/** Shooting columns contain two independent quantities; signed +/- is never compared by magnitude. */
+fun statNumbers(key: String, value: String): List<Double?> = when(key) {
+    "FG", "3PT", "FT" -> value.split("-").let { if(it.size == 2) it.map(String::toDoubleOrNull) else listOf(null, null) }
+    "MIN" -> listOf(if(value.contains(":")) value.split(":").let { p -> if(p.size==2) p[0].toDoubleOrNull()?.let { m -> p[1].toDoubleOrNull()?.let { s -> m*60+s } } else null } else value.toDoubleOrNull()?.times(60))
+    else -> listOf(value.replace("−", "-").toDoubleOrNull())
+}
+fun statMaxima(players: List<PlayerLine>, key: String): List<Double?> {
+    val values = players.filterNot { it.dnp }.map { statNumbers(key, it.cells[key] ?: "—") }
+    val count = if(key in listOf("FG", "3PT", "FT")) 2 else 1
+    return (0 until count).map { i -> values.mapNotNull { it.getOrNull(i) }.maxOrNull()?.takeIf { max -> max != 0.0 || key == "+/-" && values.any { (it.getOrNull(i) ?: 0.0) < 0 } } }
+}
+fun statHighlights(p: PlayerLine, key: String, maxima: List<Double?>): List<Boolean> =
+    statNumbers(key, p.cells[key] ?: "—").mapIndexed { i, value -> !p.dnp && value != null && maxima.getOrNull(i) != null && value == maxima[i] }
+fun signedStat(value: String): String = value.replace("−", "-").toIntOrNull()?.let { if(it > 0) "+$it" else it.toString() } ?: value
 
 data class Loaded<T>(val data: T? = null, val updated: Long = 0, val error: String? = null, val loading: Boolean = false)
 private data class Response(val json: JSONObject, val updated: Long, val error: String? = null)
