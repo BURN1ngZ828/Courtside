@@ -112,7 +112,7 @@ fun parseStandings(j: JSONObject): Table {
     return Table(season, rows)
 }
 data class PlayerLine(val name: String, val dnp: Boolean, val cells: Map<String, String>, val id: String = "", val english: String = "", val onCourt: Boolean = false, val starter: Boolean = false)
-data class PlayerTable(val team: Team, val players: List<PlayerLine>)
+data class PlayerTable(val team: Team, val players: List<PlayerLine>, val totals: Map<String, String> = emptyMap())
 data class TeamStat(val label: String, val away: String, val home: String)
 data class ScorePoint(val elapsed: Int, val period: Int, val clock: String, val away: Int, val home: Int)
 data class Detail(val game: Game, val players: List<PlayerTable>, val stats: List<TeamStat>, val points: List<ScorePoint> = emptyList(), val curveComplete: Boolean = false)
@@ -126,7 +126,7 @@ fun parseDetail(j: JSONObject, playerNames: PlayerNames = PlayerNames()): Detail
         PlayerTable(parseTeam(block.getJSONObject("team")), group.array("athletes").objects().map { p ->
             val athlete = p.getJSONObject("athlete")
             PlayerLine(playerNames.matchName(athlete.text("id"), athlete.text("displayName")), p.optBoolean("didNotPlay"), labels.zip(p.array("stats").strings()).toMap(), athlete.text("id"), athlete.text("displayName"), game.live && p.optBoolean("active"), p.optBoolean("starter"))
-        })
+        }, labels.zip(group.array("totals").strings()).toMap())
     }
     val teams = box.array("teams").objects().associate { it.getJSONObject("team").getString("id") to it.array("statistics").objects().associate { s -> s.text("name") to s.text("displayValue", "—") } }
     val names = linkedMapOf("fieldGoalsMade-fieldGoalsAttempted" to "投篮", "threePointFieldGoalsMade-threePointFieldGoalsAttempted" to "三分", "freeThrowsMade-freeThrowsAttempted" to "罚球", "totalRebounds" to "篮板", "assists" to "助攻", "turnovers" to "失误", "steals" to "抢断", "blocks" to "盖帽", "offensiveRebounds" to "前场篮板", "defensiveRebounds" to "后场篮板", "fouls" to "犯规")
@@ -184,16 +184,17 @@ class NbaRepository(context: Context) {
     private val client = OkHttpClient.Builder().connectTimeout(12, TimeUnit.SECONDS).readTimeout(18, TimeUnit.SECONDS).callTimeout(25, TimeUnit.SECONDS).build()
     private val base = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/"
     private val locks = ConcurrentHashMap<String, Mutex>()
-    private suspend fun request(key: String, url: String, ttl: Long, force: Boolean, validate: (JSONObject) -> Unit): Response = withContext(Dispatchers.IO) {
+    private fun fetchJson(url: String): JSONObject = client.newCall(Request.Builder().url(url).header("User-Agent", "Courtside-Android/1.0").build()).execute().use { response ->
+        if(!response.isSuccessful) error("HTTP ${response.code}")
+        JSONObject(response.body?.string() ?: error("空响应"))
+    }
+    private suspend fun request(key: String, url: String, ttl: Long, force: Boolean, fetch: (suspend () -> JSONObject)? = null, validate: (JSONObject) -> Unit): Response = withContext(Dispatchers.IO) {
         locks.getOrPut(key) { Mutex() }.withLock {
         val file = File(cache, "$key.json")
         val old = runCatching { JSONObject(file.readText()) }.getOrNull()
         if(!force && old != null && System.currentTimeMillis() - old.getLong("at") < ttl) return@withLock Response(old.getJSONObject("body"), old.getLong("at"))
         try {
-            val json = client.newCall(Request.Builder().url(url).header("User-Agent", "Courtside-Android/0.1").build()).execute().use { response ->
-                if(!response.isSuccessful) error("HTTP ${response.code}")
-                JSONObject(response.body?.string() ?: error("空响应"))
-            }
+            val json = fetch?.invoke() ?: fetchJson(url)
             validate(json)
             val now = System.currentTimeMillis()
             val temp = File(cache, "$key.tmp")
@@ -201,6 +202,7 @@ class NbaRepository(context: Context) {
             if(!temp.renameTo(file)) { file.writeText(temp.readText()); temp.delete() }
             Response(json, now)
         } catch(e: Exception) {
+            if(e is kotlinx.coroutines.CancellationException) throw e
             val message = when {
                 e.message?.contains("403") == true -> "来源拒绝访问（403）"
                 e.message?.contains("429") == true -> "请求受限，请稍后手动重试"
@@ -212,7 +214,7 @@ class NbaRepository(context: Context) {
         }
         }
     }
-    private suspend fun <T> load(block: suspend () -> Loaded<T>): Loaded<T> = try { block() } catch(e: kotlinx.coroutines.CancellationException) { throw e } catch(e: Exception) { Loaded(error = e.message ?: "数据暂不可用") }
+    private suspend fun <T> load(block: suspend () -> Loaded<T>): Loaded<T> = withContext(Dispatchers.IO) { try { block() } catch(e: kotlinx.coroutines.CancellationException) { throw e } catch(e: Exception) { Loaded(error = e.message ?: "数据暂不可用") } }
     suspend fun teams(force: Boolean = false): Loaded<List<Team>> = load {
         fun parse(j: JSONObject) = j.getJSONArray("sports").getJSONObject(0).getJSONArray("leagues").getJSONObject(0).getJSONArray("teams").objects().map { parseTeam(it.getJSONObject("team")) }.filter { it.id in chineseNames }
         val r = request("teams", base + "teams", 86400000, force) { require(parse(it).size == 30) }
@@ -249,5 +251,36 @@ class NbaRepository(context: Context) {
     suspend fun detail(id: String, force: Boolean = false): Loaded<Detail> = load {
         val r = request("game-$id", base + "summary?event=$id", 60000, force) { parseDetail(it) }
         Loaded(parseDetail(r.json, playerNames), r.updated, r.error)
+    }
+    suspend fun league(season: Int, type: Int, force: Boolean = false): Loaded<LeagueStats> = load {
+        val url = "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/statistics/byathlete?season=$season&seasontype=$type&limit=100&sort=offensive.avgPoints:desc&page="
+        val r = request("league-$season-$type", url + "1", 10800000, force, fetch = {
+            val first = fetchJson(url + "1")
+            parseLeague(first, season, type)
+            val pagination = first.optJSONObject("pagination")
+            if(pagination != null) {
+                val count = pagination.getInt("count")
+                val pages = pagination.getInt("pages")
+                require(pages in 1..20 && count in 0..2000) { "分页数量异常" }
+                val all = first.getJSONArray("athletes")
+                // Fetch a bounded group of pages; only commit the cache after every page validates.
+                (2..pages).toList().chunked(3).forEach { batch ->
+                    val results = coroutineScope { batch.map { page -> async { fetchJson(url + page).also { j ->
+                        parseLeague(j, season, type)
+                        require(j.getJSONObject("pagination").getInt("count") == count && j.getJSONObject("pagination").getInt("pages") == pages && j.getJSONObject("pagination").getInt("page") == page) { "分页数据已变化，请重试" }
+                    } } }.map { it.await() } }
+                    results.forEach { it.array("athletes").objects().forEach(all::put) }
+                }
+                require(all.length() == count) { "全联盟数据未完整获取" }
+            }
+            first
+        }) { parseLeague(it, season, type) }
+        Loaded(parseLeague(r.json, season, type, playerNames), r.updated, r.error)
+    }
+    suspend fun playerGames(id: String, season: Int, type: Int, force: Boolean = false): Loaded<List<PlayerGame>> = load {
+        require(id.matches(Regex("[0-9]+")))
+        val url = "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/$id/gamelog?season=$season&seasontype=$type"
+        val r = request("playergames-$id-$season-$type", url, 3600000, force) { parsePlayerGames(it, season, type) }
+        Loaded(parsePlayerGames(r.json, season, type), r.updated, r.error)
     }
 }

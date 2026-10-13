@@ -4,6 +4,6 @@
 
 沿用 Kotlin／Compose／miuix 结构，不加入演示比分，不用首发推测在场状态。姓名与队标按稳定 ID 匹配，修订保留来源。
 
-提交前运行 `./gradlew :app:assembleDebug :app:testDebugUnitTest`（Windows 使用 `gradlew.bat`）。UI 改动附截图，确认双语姓名、固定表头、横向滚动与大字体。PR 说明问题、行为变化及实际验证。
+提交前运行 `./gradlew :app:assembleRelease :app:testDebugUnitTest`（Windows 使用 `gradlew.bat`）。UI 改动附截图，确认双语姓名、固定表头、横向滚动与大字体。PR 说明问题、行为变化及实际验证。
 
 不提交本地设置、签名密钥、SDK、缓存或 APK。安装包通过 Release 发布，见 `docs/RELEASING.md`。

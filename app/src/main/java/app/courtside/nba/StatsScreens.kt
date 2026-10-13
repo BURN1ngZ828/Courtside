@@ -65,6 +65,7 @@ private fun venueName(game:Game)=arenas[game.venue] ?: game.venue.ifBlank {"场�
     var tab by rememberSaveable(gameId){mutableIntStateOf(0)}
     var selectedTeam by rememberSaveable(gameId){mutableIntStateOf(0)}
     var expandedPlayer by remember {mutableStateOf<PlayerLine?>(null)}
+    var showDnp by rememberSaveable(gameId) {mutableStateOf(false)}
     val overviewState=rememberLazyListState()
     val playerState=rememberLazyListState()
     val horizontal=rememberScrollState()
@@ -75,7 +76,8 @@ private fun venueName(game:Game)=arenas[game.venue] ?: game.venue.ifBlank {"场�
     fun identity(p:PlayerLine)=p.id.ifBlank {p.english.ifBlank {p.name}}
     val order=table?.let {orders[it.team.id] ?: it.players.map(::identity)}.orEmpty()
     SideEffect {if(table!=null && table.players.isNotEmpty()) orders.putIfAbsent(table.team.id,order)}
-    val rows=table?.players.orEmpty().sortedBy {p -> order.indexOf(identity(p)).takeIf {it>=0} ?: Int.MAX_VALUE}
+    val allRows=remember(table?.players,order) {table?.players.orEmpty().sortedBy {p -> order.indexOf(identity(p)).takeIf {it>=0} ?: Int.MAX_VALUE}}
+    val rows=remember(allRows,showDnp) {allRows.filter {showDnp || !it.dnp}}
     val maxima=remember(rows){playerColumns.associate {it.first to statMaxima(rows,it.first)}}
     var expired by remember(loaded.updated){mutableStateOf(false)}
     LaunchedEffect(loaded.updated){delay((90000-(System.currentTimeMillis()-loaded.updated)).coerceAtLeast(0));expired=true}
@@ -134,14 +136,33 @@ private fun venueName(game:Game)=arenas[game.venue] ?: game.venue.ifBlank {"场�
                             val active=p.onCourt && detail.game.live && fresh
                             Row(Modifier.fillMaxWidth().background(if(index%2==0) background else background.copy(alpha=.62f)).heightIn(min=44.dp),verticalAlignment=Alignment.CenterVertically) {
                                 Column(Modifier.width(nameWidth).heightIn(min=44.dp).clickable {expandedPlayer=p}.padding(horizontal=6.dp,vertical=5.dp).semantics {stateDescription=if(active) "在场" else if(p.dnp) "未上场" else ""}) {
-                                    Text(p.name+if(active) " ●" else "",color=if(active) (if(LocalDark.current) Color(0xFFFF9696) else Color(0xFFB62836)) else ink,fontSize=12.sp,lineHeight=16.sp,maxLines=1,overflow=TextOverflow.Ellipsis)
+                                    Text(p.name+(if(active) " ●" else "")+(if(p.starter) " · 首" else ""),color=if(active) (if(LocalDark.current) Color(0xFFFF9696) else Color(0xFFB62836)) else ink,fontSize=12.sp,lineHeight=16.sp,maxLines=1,overflow=TextOverflow.Ellipsis)
                                     Text((if(p.dnp) "未上场 · " else "")+p.english.ifBlank {p.name},color=muted,fontSize=10.sp,lineHeight=13.sp,maxLines=1,overflow=TextOverflow.Ellipsis)
                                 }
                                 Row(Modifier.weight(1f).horizontalScroll(horizontal)){playerColumns.forEach {(key,_) -> PlayerCell(p,key,statWidth(key,scale),statHighlights(p,key,maxima[key].orEmpty()))}}
                             }
                             Rule()
                         }
-                        item {Text("蓝色：本队最高值 · 红点：在场 · 左右滑动查看更多",color=muted,fontSize=10.sp,lineHeight=15.sp,modifier=Modifier.padding(top=8.dp));Meta(loaded)}
+                        item(key="team-total") {
+                            Column(Modifier.background(background)) {
+                                Row(verticalAlignment=Alignment.CenterVertically) {
+                                    StatsCell("合计",nameWidth,ink)
+                                    Row(Modifier.weight(1f).horizontalScroll(horizontal)) {playerColumns.forEach {(key,_) -> StatsCell(table?.totals?.get(key)?.ifBlank {"—"} ?: "—",statWidth(key,scale),ink)}}
+                                }
+                                Rule()
+                                Row(verticalAlignment=Alignment.CenterVertically) {
+                                    StatsCell("命中率",nameWidth,muted)
+                                    Row(Modifier.weight(1f).horizontalScroll(horizontal)) {playerColumns.forEach {(key,_) ->
+                                        val numbers=statNumbers(key,table?.totals?.get(key) ?: "—")
+                                        val made=numbers.getOrNull(0);val attempts=numbers.getOrNull(1)
+                                        val pct=if(key in listOf("FG","3PT","FT") && made!=null && attempts!=null && attempts>0) java.lang.String.format(java.util.Locale.US,"%.1f%%",made/attempts*100) else "—"
+                                        StatsCell(pct,statWidth(key,scale),muted)
+                                    }}
+                                }
+                            }
+                        }
+                        if(allRows.any {it.dnp}) item {Text("未出场 ${allRows.count {it.dnp}} 人 "+if(showDnp) "⌃" else "⌄",color=muted,fontSize=12.sp,modifier=Modifier.fillMaxWidth().clickable {showDnp=!showDnp}.padding(14.dp))}
+                        item {Text("蓝色：本队最高值 · 红点：在场 · 首：首发 · 左右滑动查看更多",color=muted,fontSize=10.sp,lineHeight=15.sp,modifier=Modifier.padding(top=8.dp));Meta(loaded)}
                     }
                 }
             }
@@ -153,6 +174,7 @@ private fun venueName(game:Game)=arenas[game.venue] ?: game.venue.ifBlank {"场�
             Text(p.english,color=muted,fontSize=14.sp,modifier=Modifier.padding(top=6.dp))
             if(p.onCourt && detail?.game?.live==true && fresh) Text("当前在场",color=accent,fontSize=12.sp,modifier=Modifier.padding(top=6.dp))
             if(p.dnp) Text("本场未上场",color=muted,fontSize=12.sp,modifier=Modifier.padding(top=6.dp))
+            if(table!=null && detail!=null) Button({expandedPlayer=null;vm.openMatchPlayer(p,table.team,detail.game)},modifier=Modifier.padding(top=12.dp)) {Text("查看赛季数据与最近比赛",color=ink)}
             Button({expandedPlayer=null},modifier=Modifier.padding(top=16.dp)){Text("关闭",color=ink)}
         }
     }}

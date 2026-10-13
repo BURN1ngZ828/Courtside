@@ -2,6 +2,8 @@ package app.courtside.nba
 
 import android.os.Build
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
@@ -43,6 +45,9 @@ internal val awayColor: Color @Composable get() = if(LocalDark.current) Color(0x
     val shape = RoundedCornerShape(radius)
     val base = if(tint.alpha < .6f) tint.compositeOver(surface) else tint
     val material = base.copy(alpha = if(navigation) { if(dark) .50f else .58f } else { if(dark) .80f else .79f })
+    // Scrolling lists need no offscreen capture, blur or lens pass for every card.
+    if(!navigation) return background(Brush.verticalGradient(listOf(material.copy(alpha=.90f), material.copy(alpha=.84f))), shape)
+        .border(.45.dp, if(dark) Color.White.copy(alpha=.09f) else Color.White.copy(alpha=.70f), shape)
     return drawBackdrop(
         backdrop = backdrop,
         shape = { shape },

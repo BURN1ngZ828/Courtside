@@ -66,9 +66,9 @@ internal val sheet: Color @Composable get() = if(LocalDark.current) Color(0xFF15
 internal val accent: Color @Composable get() = if(LocalDark.current) Color(0xFF9DBBFF) else Color(0xFF2868D9)
 internal val line: Color @Composable get() = if(LocalDark.current) Color.White.copy(alpha=.08f) else Color.Black.copy(alpha=.07f)
 internal val numericStyle = TextStyle(fontFeatureSettings="tnum")
-private data class Route(val page: Int, val sub: String, val game: String) {
-    val depth get() = if(sub.isNotBlank() || game.isNotBlank()) 1 else 0
-    val key get() = when { game.isNotBlank() -> "game-$game"; sub.isNotBlank() -> sub; else -> "tab-$page" }
+private data class Route(val page: Int, val sub: String, val game: String, val player: String) {
+    val depth get() = if(sub.isNotBlank() || game.isNotBlank() || player.isNotBlank()) 1 else 0
+    val key get() = when { game.isNotBlank() -> "game-$game"; player.isNotBlank() -> "player-$player"; sub.isNotBlank() -> sub; else -> "tab-$page" }
 }
 @Composable private fun Courtside(vm: AppViewModel = viewModel()) {
     val pref by vm.preferences.collectAsStateWithLifecycle()
@@ -94,15 +94,15 @@ private data class Route(val page: Int, val sub: String, val game: String) {
         vm.foreground()
         while(true) { delay(60000); vm.poll(currentPage) }
     } }
-    BackHandler(vm.detailId.isNotBlank() || sub.isNotBlank() || page != 0) {
-        when { vm.detailId.isNotBlank() -> vm.closeGame(); sub.isNotBlank() -> sub = ""; else -> page = 0 }
+    BackHandler(vm.detailId.isNotBlank() || vm.selectedPlayer != null || sub.isNotBlank() || page != 0) {
+        when { vm.detailId.isNotBlank() -> vm.closeGame(); vm.selectedPlayer != null -> vm.closePlayer(); sub.isNotBlank() -> sub = ""; else -> page = 0 }
     }
-    val route = Route(page, sub, vm.detailId)
+    val route = Route(page, sub, vm.detailId, vm.selectedPlayer?.row?.id.orEmpty())
     MiuixTheme(colors = if(dark) darkColorScheme() else lightColorScheme()) {
         CompositionLocalProvider(LocalDark provides dark, LocalGlassBackdrop provides background, LocalBottomPadding provides (barHeight + 18.dp)) {
             Box(Modifier.fillMaxSize()) {
                 GlassBackground(background, vm.teams.data.orEmpty().find { it.id == pref.team })
-                AnimatedContent(route, modifier = Modifier.fillMaxSize().statusBarsPadding().layerBackdrop(pageBackdrop), contentKey = { it.key }, transitionSpec = {
+                AnimatedContent(route, modifier = Modifier.fillMaxSize().statusBarsPadding().then(if(route.depth == 0) Modifier.layerBackdrop(pageBackdrop) else Modifier), contentKey = { it.key }, transitionSpec = {
                     if(targetState.depth == initialState.depth && targetState.depth == 0) {
                         val direction = if(targetState.page > initialState.page) 1 else -1
                         val distance = with(density) { 24.dp.roundToPx() } * direction
@@ -118,12 +118,13 @@ private data class Route(val page: Int, val sub: String, val game: String) {
                 }, label = "page") { target ->
                     when {
                         target.game.isNotBlank() -> DetailPage(vm, target.game)
+                        target.player.isNotBlank() -> PlayerPage(vm)
                         target.sub == "teams" -> TeamsPage(vm, pref, { sub = "" })
                         else -> pageState.SaveableStateProvider("tab-${target.page}") {
                             when(target.page) {
-                                0 -> HomePage(vm, pref) { page = 1; vm.scheduleFilter=1; vm.loadDate(vm.currentDate) }
-                                1 -> SchedulePage(vm, pref)
-                                2 -> StandingsPage(vm, pref)
+                                0 -> SchedulePage(vm, pref)
+                                1 -> HomePage(vm, pref) { page = 0; vm.scheduleFilter=2; vm.loadDate(vm.currentDate) }
+                                2 -> DataPage(vm, pref)
                                 else -> SettingsPage(vm, pref) { sub = "teams" }
                             }
                         }
@@ -148,13 +149,13 @@ private data class Route(val page: Int, val sub: String, val game: String) {
     var contentWidth by remember {mutableStateOf(0.dp)}
     var contentHeight by remember {mutableStateOf(48.dp)}
     Box(Modifier.fillMaxWidth().glass(30.dp,backdrop=backdrop,navigation=true,sheen=sheen).padding(4.dp)) {
-        if(contentWidth>0.dp) Box(Modifier.offset(x=(contentWidth/4)*position)
+        if(contentWidth>0.dp) Box(Modifier.offset { androidx.compose.ui.unit.IntOffset(with(density) { ((contentWidth/4)*position).roundToPx() }, 0) }
             .width(contentWidth/4).height(contentHeight)
             .background(if(LocalDark.current) Color.White.copy(alpha=.12f) else Color.Black.copy(alpha=.075f),RoundedCornerShape(26.dp)))
         Row(Modifier.fillMaxWidth().heightIn(min=48.dp).onSizeChanged {
             contentWidth=with(density){it.width.toDp()};contentHeight=with(density){it.height.toDp()}
         }.selectableGroup()) {
-            listOf("首页", "赛程", "排名", "设置").forEachIndexed { index, title ->
+            listOf("首页", "主队", "数据", "设置").forEachIndexed { index, title ->
                 val selected = page == index
                 val tint by animateColorAsState(if(selected) accent else ink.copy(alpha=.78f), tween(190), label="tab-color")
                 val interaction = remember { MutableInteractionSource() }
@@ -176,7 +177,7 @@ private fun navIcon(index: Int): ImageVector = ImageVector.Builder("nav$index", 
     path(fill=androidx.compose.ui.graphics.SolidColor(Color.Black)) {
         when(index) {
             0 -> { moveTo(3f,10f); lineTo(12f,2f); lineTo(21f,10f); lineTo(21f,22f); lineTo(14f,22f); lineTo(14f,14f); lineTo(10f,14f); lineTo(10f,22f); lineTo(3f,22f); close() }
-            1 -> { moveTo(4f,4f); lineTo(20f,4f); lineTo(20f,8f); lineTo(4f,8f); close(); moveTo(4f,10f); lineTo(20f,10f); lineTo(20f,21f); lineTo(4f,21f); close() }
+            1 -> { moveTo(12f,2f); lineTo(21f,6f); lineTo(20f,16f); lineTo(12f,23f); lineTo(4f,16f); lineTo(3f,6f); close() }
             2 -> { moveTo(3f,12f); lineTo(8f,12f); lineTo(8f,22f); lineTo(3f,22f); close(); moveTo(10f,3f); lineTo(15f,3f); lineTo(15f,22f); lineTo(10f,22f); close(); moveTo(17f,8f); lineTo(22f,8f); lineTo(22f,22f); lineTo(17f,22f); close() }
             3 -> {
                 moveTo(10f,2f); lineTo(14f,2f); lineTo(15f,5f); lineTo(18f,6f); lineTo(21f,6f); lineTo(23f,10f); lineTo(20f,12f); lineTo(21f,16f); lineTo(18f,19f); lineTo(15f,18f); lineTo(14f,22f); lineTo(10f,22f); lineTo(9f,19f); lineTo(6f,18f); lineTo(3f,18f); lineTo(1f,14f); lineTo(4f,12f); lineTo(3f,8f); lineTo(6f,5f); lineTo(9f,6f); close()

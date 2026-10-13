@@ -9,11 +9,20 @@ android {
         applicationId = "app.courtside.nba"
         minSdk = 24
         targetSdk = 36
-        versionCode = 5
-        versionName = "0.4.0"
+        versionCode = 6
+        versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures { compose = true }
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            // Preserve the maintainer's existing certificate for in-place upgrades.
+            signingConfig = signingConfigs.getByName("debug")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
