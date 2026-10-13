@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
@@ -30,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
@@ -63,6 +65,7 @@ internal val surface: Color @Composable get() = if(LocalDark.current) Color(0xFF
 internal val sheet: Color @Composable get() = if(LocalDark.current) Color(0xFF151C2B).copy(alpha=.32f) else Color.White.copy(alpha=.32f)
 internal val accent: Color @Composable get() = if(LocalDark.current) Color(0xFF9DBBFF) else Color(0xFF2868D9)
 internal val line: Color @Composable get() = if(LocalDark.current) Color.White.copy(alpha=.08f) else Color.Black.copy(alpha=.07f)
+internal val numericStyle = TextStyle(fontFeatureSettings="tnum")
 private data class Route(val page: Int, val sub: String, val game: String) {
     val depth get() = if(sub.isNotBlank() || game.isNotBlank()) 1 else 0
     val key get() = when { game.isNotBlank() -> "game-$game"; sub.isNotBlank() -> sub; else -> "tab-$page" }
@@ -84,7 +87,7 @@ private data class Route(val page: Int, val sub: String, val game: String) {
     val background = rememberLayerBackdrop()
     val pageBackdrop = rememberLayerBackdrop()
     val navigationBackdrop = rememberCombinedBackdrop(background, pageBackdrop)
-    var barHeight by remember { mutableStateOf(120.dp) }
+    var barHeight by remember { mutableStateOf(90.dp) }
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val currentPage by rememberUpdatedState(page)
     LaunchedEffect(lifecycle) { lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -140,8 +143,17 @@ private data class Route(val page: Int, val sub: String, val game: String) {
 }
 @Composable private fun BottomTabs(page: Int, backdrop: Backdrop, select: (Int) -> Unit) {
     val sheen by animateFloatAsState((page+.5f)/4, spring(dampingRatio=.8f,stiffness=400f),label="glass-light")
-    Box(Modifier.fillMaxWidth().glass(32.dp,backdrop=backdrop,navigation=true,sheen=sheen)) {
-        Row(Modifier.fillMaxWidth().heightIn(min=58.dp).padding(horizontal=6.dp,vertical=4.dp).selectableGroup()) {
+    val position by animateFloatAsState(page.toFloat(),spring(dampingRatio=.82f,stiffness=500f),label="tab-selector")
+    val density=LocalDensity.current
+    var contentWidth by remember {mutableStateOf(0.dp)}
+    var contentHeight by remember {mutableStateOf(48.dp)}
+    Box(Modifier.fillMaxWidth().glass(30.dp,backdrop=backdrop,navigation=true,sheen=sheen).padding(4.dp)) {
+        if(contentWidth>0.dp) Box(Modifier.offset(x=(contentWidth/4)*position)
+            .width(contentWidth/4).height(contentHeight)
+            .background(if(LocalDark.current) Color.White.copy(alpha=.12f) else Color.Black.copy(alpha=.075f),RoundedCornerShape(26.dp)))
+        Row(Modifier.fillMaxWidth().heightIn(min=48.dp).onSizeChanged {
+            contentWidth=with(density){it.width.toDp()};contentHeight=with(density){it.height.toDp()}
+        }.selectableGroup()) {
             listOf("首页", "赛程", "排名", "设置").forEachIndexed { index, title ->
                 val selected = page == index
                 val tint by animateColorAsState(if(selected) accent else ink.copy(alpha=.78f), tween(190), label="tab-color")

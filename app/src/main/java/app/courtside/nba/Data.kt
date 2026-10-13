@@ -73,6 +73,20 @@ fun isWinner(game: Game, team: String): Boolean {
     val home = game.homeScore.toIntOrNull() ?: return false
     return (team == game.away.id && away > home) || (team == game.home.id && home > away)
 }
+fun leadingTeam(game: Game): String? {
+    if(!game.live && !game.finished) return null
+    val away=game.awayScore.toIntOrNull()?.takeIf {it>=0} ?: return null
+    val home=game.homeScore.toIntOrNull()?.takeIf {it>=0} ?: return null
+    return when {away>home -> game.away.id;home>away -> game.home.id;else -> null}
+}
+fun leadLabel(game: Game): String {
+    if(!game.live && !game.finished) return ""
+    val away=game.awayScore.toIntOrNull()?.takeIf {it>=0} ?: return ""
+    val home=game.homeScore.toIntOrNull()?.takeIf {it>=0} ?: return ""
+    if(away==home) return "比分持平"
+    val team=if(away>home) game.away else game.home
+    return if(game.finished) "${team.shortName}获胜 · 领先${kotlin.math.abs(away-home)}分" else "${team.shortName}领先${kotlin.math.abs(away-home)}分"
+}
 fun homeGames(today: List<Game>, schedule: List<Game>, team: String, now: Instant): List<Game> {
     if(team.isBlank()) return emptyList()
     val games = (today+schedule).filter { it.involves(team) }.distinctBy { it.id }

@@ -33,7 +33,7 @@ internal val awayColor: Color @Composable get() = if(LocalDark.current) Color(0x
 /** Cards sample the background only. The floating bar samples the separately captured page.
  * Keeping those layers separate avoids recursive captures and expensive nested blur passes. */
 @Composable internal fun Modifier.glass(
-    radius: Dp = 26.dp,
+    radius: Dp = 20.dp,
     tint: Color = surface,
     backdrop: Backdrop = LocalGlassBackdrop.current,
     navigation: Boolean = false,
@@ -50,11 +50,11 @@ internal val awayColor: Color @Composable get() = if(LocalDark.current) Color(0x
             if(Build.VERSION.SDK_INT >= 31) blur((if(navigation) 12.dp else 8.dp).toPx())
             if(Build.VERSION.SDK_INT >= 33) lens((if(navigation) 12.dp else 6.dp).toPx(), (if(navigation) 14.dp else 7.dp).toPx())
         },
-        highlight = { Highlight(width=.65.dp, alpha=if(dark) .28f else .50f) },
-        shadow = { Shadow(radius=if(navigation) 16.dp else 10.dp, color=Color.Black.copy(alpha=if(dark) .16f else .045f)) },
+        highlight = { Highlight(width=.45.dp, alpha=if(navigation) .23f else if(dark) .12f else .19f) },
+        shadow = { Shadow(radius=if(navigation) 12.dp else 6.dp, color=Color.Black.copy(alpha=if(dark) .12f else .035f)) },
         onDrawSurface = {
             drawRect(material)
-            drawRect(Brush.radialGradient(listOf(Color.White.copy(alpha=if(dark) .055f else .16f), Color.Transparent),
+            drawRect(Brush.radialGradient(listOf(Color.White.copy(alpha=if(dark) .035f else .07f), Color.Transparent),
                 center=Offset(size.width*sheen, 0f), radius=size.width.coerceAtLeast(1f)*.8f))
         }
     )
@@ -62,7 +62,7 @@ internal val awayColor: Color @Composable get() = if(LocalDark.current) Color(0x
 
 @Composable internal fun Card(
     modifier: Modifier = Modifier,
-    cornerRadius: Dp = 26.dp,
+    cornerRadius: Dp = 20.dp,
     insideMargin: PaddingValues = PaddingValues(0.dp),
     colors: CardColors = CardDefaults.defaultColors(color=surface),
     content: @Composable ColumnScope.() -> Unit

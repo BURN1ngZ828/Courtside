@@ -7,6 +7,23 @@ import org.junit.Test
 
 class DetailTest {
     private fun summary()=JSONObject(javaClass.getResource("/summary.json")!!.readText())
+    @Test fun liveAndFinalLeadersUseActualScoreAndTieStaysNeutral() {
+        val original=parseDetail(summary()).game
+        val live=original.copy(state="in",awayScore="89",homeScore="80")
+        assertEquals(live.away.id,leadingTeam(live))
+        assertEquals("${live.away.shortName}领先9分",leadLabel(live))
+        val final=live.copy(state="post",awayScore="99",homeScore="110")
+        assertEquals(final.home.id,leadingTeam(final))
+        assertEquals("${final.home.shortName}获胜 · 领先11分",leadLabel(final))
+        val tie=live.copy(homeScore="89")
+        assertNull(leadingTeam(tie));assertEquals("比分持平",leadLabel(tie))
+    }
+    @Test fun missingInvalidOrUnstartedScoresCannotCreateLeader() {
+        val original=parseDetail(summary()).game
+        listOf(original.copy(state="pre",awayScore="89",homeScore="80"),original.copy(state="in",homeScore="—"),original.copy(state="in",awayScore="-1")).forEach {game ->
+            assertNull(leadingTeam(game));assertEquals("",leadLabel(game))
+        }
+    }
     @Test fun venueFallsBackToGameInfoAndEnglishAndIdentityAreRetained() {
         val json=summary()
         json.put("gameInfo",JSONObject().put("venue",JSONObject().put("fullName","Madison Square Garden")))
